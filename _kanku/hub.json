@@ -1,0 +1,15 @@
+{
+  "name"         : "Kanku-Hub",
+  "url"          : "https://github.com/M0ses/kanku-hub",
+  "repositories" : {
+    "JFT" : {
+      "KankuFiles": [
+	{
+	  "name" : "Example",
+	  "description" : "This file is just an example",
+	  "path" : "KankuFile"
+	}
+      ]
+    }
+  }
+}
