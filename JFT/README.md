@@ -13,7 +13,9 @@ try to find the most comfortable, useful and secure way to implement it.
 
 ## Repositories
 
-### [vagranku](kankus://raw.githubusercontent.com/M0ses/kanku-hub/master/JFT/vagranku/KankuFile)
+### vagranku
+
+[INSTALL](kankus://raw.githubusercontent.com/M0ses/kanku-hub/master/JFT/vagranku/KankuFile)
 
 * Deploy a Tumbleweed VM `vagranku-host`
 * Install kanku rpms
