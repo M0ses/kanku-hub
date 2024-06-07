@@ -1,0 +1,10 @@
+use_module: Kanku::Handler::ExecuteCommandOnHost
+options:
+  username: kanku
+  context2env:
+      ipaddress:
+  commands:
+    - "command ansible-playbook --version 2>/dev/null || { echo 'Please install ansible on your Kanku host'; exit 1; }"
+    - echo "$IPADDRESS vagranku-guest" >> /etc/hosts
+    - ssh-keyscan vagranku-guest >> ~/.ssh/known_hosts
+    - eval `ssh-agent`;ssh-add;ansible-playbook  -i /tmp/kanku/guest.d/inventory.yaml --extra-vars "variable_host=vagranku-guest"  /tmp/kanku/guest.d/playbooks/dummyplaybook.yaml

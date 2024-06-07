@@ -1,0 +1,6 @@
+- name: dummy action
+  hosts: "{{ variable_host | default('all') }}"
+  tasks:
+    - name: get information from uname
+      shell:
+        "uname -a > test.log"

@@ -1,11 +1,11 @@
 #
-domain_name: kanku-vagrant
-default_job: kanku-job
+domain_name: vagranku-host
+default_job: vagrant-ansible
 login_user: root
 login_pass: kankudai
 
 jobs:
- kanku-job:
+ vagrant-ansible:
   -
     use_module: Kanku::Handler::SetJobContext
     options:
@@ -13,41 +13,49 @@ jobs:
   -
     use_module: Kanku::Handler::OBSCheck
     options:
-      api_url: https://api.opensuse.org/public
-      # Please have a look at
-      # kanku lsi
-      # to find more official Images
       project: devel:kanku:images
       package: openSUSE-Tumbleweed-JeOS:ext4
       repository: images_tumbleweed
       arch: x86_64
-      use_oscrc: 0
   -
     use_module: Kanku::Handler::ImageDownload
   -
     use_module: Kanku::Handler::CreateDomain
     options:
       memory: 6G
-      vcpu: 4 
+      vcpu: 2
       use_9p: 1
   -
     use_module: Kanku::Handler::PrepareSSH
+  # Kanku::Handler::CopyProfile configuration in kanku-config.yml required
   -
     use_module: Kanku::Handler::CopyProfile
   -
     use_module: Kanku::Handler::ExecuteCommandViaSSH
     options:
       commands:
-        - zypper -n in kanku-cli make
+        - zypper --gpg-auto-import-keys ref -s
+        - zypper -n in kanku-cli make ansible
         - git clone https://github.com/M0ses/kanku.git && git -C kanku checkout fix_issue_59 && make -C kanku lib templates
         - kanku setup --devel --user kanku
-        # END
         - "chown kanku -R /home/kanku/.ssh"
+        # FIXME: 
+        # This workaround ugly and insecure but ATM required
+        # The vagrant images do not register their hostname properly 
+        # in the dhcp/dns server and are unresolvable without this hack
+        - chmod 666 /etc/hosts
   -
     use_module: Kanku::Handler::ExecuteCommandViaSSH
     options:
       username: kanku
       commands:
-        - 'ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""'
-        - kanku init -T vagrant -d vagrant
-        - kanku up
+        - ssh-keygen -N "" -f .ssh/id_ed25519
+        - ln -sf /tmp/kanku/guest.d/
+        - kanku init -T vagrant -d vagranku-guest
+        - echo "  - !include guest.d/run_ansible.yml" >> KankuFile
+        - eval `ssh-agent`;ssh-add;kanku up --skip_all_checks
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        - chmod 644 /etc/hosts
