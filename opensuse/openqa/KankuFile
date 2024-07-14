@@ -1,0 +1,36 @@
+domain_name: openqa
+default_job: tasks
+login_user: root
+login_pass: kankudai
+
+jobs:
+ tasks:
+  -
+    use_module: Kanku::Handler::SetJobContext
+    options:
+      host_interface: eth0
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      api_url: https://api.opensuse.org/public
+      project: devel:kanku:images
+      repository: images_tumbleweed
+      package: openSUSE-Tumbleweed-JeOS:ext4
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 8G
+      vcpu: 2
+      use_9p: 0
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        - zypper ar obs://devel:openQA devel:openQA
+        - zypper --gpg-auto-import-keys ref -s
+        - zypper -n in openQA-bootstrap
+        - /usr/share/openqa/script/openqa-bootstrap

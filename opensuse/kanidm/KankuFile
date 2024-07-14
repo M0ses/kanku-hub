@@ -1,0 +1,52 @@
+domain_name: kanidm
+default_job: kanku-job
+login_user: root
+login_pass: kankudai
+
+jobs:
+ kanku-job:
+  -
+    use_module: Kanku::Handler::SetJobContext
+    options:
+      host_interface: eth0
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      project: devel:kanku:images
+      package: openSUSE-Tumbleweed-JeOS:ext4
+      repository: images_tumbleweed
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 2G
+      vcpu: 2
+      use_9p: 1
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::CopyProfile
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        # Avoid dhcp/dns problems
+        - systemctl restart network
+        - zypper ref -s
+        - zypper -n dup
+        # Install recommended packages
+        - zypper -n in easy-rsa hostname bind-utils
+        - zypper -n in kanidm kanidm-server kanidm-clients openssl hostname bind-utils
+        - perl -p -i -e 's/idm.example.com/kanidm.kanku.site/' /etc/kanidm/server.toml
+        - mkdir -p /var/lib/private/kanidm/
+        - echo -en "DE\nBavaria\nNuremberg\nKanIDM Test\nKanIDM Test CA\nidm.kanku.site\n\n"|openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -keyout /var/lib/private/kanidm/key.pem -out /var/lib/private/kanidm/chain.pem
+        - chown 61388:61388 -R /var/lib/private/kanidm/
+        - systemctl enable --now kanidmd
+        - kanidmd recover-account admin > admin.log
+        - kanidmd recover-account idm_admin > idm_admin.log
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      username: kanku
+      commands:
+        - kanidm login --name idm_admin --url https://kanidm.kanku.site:443 --ca /var/lib/private/kanidm/chain.pem

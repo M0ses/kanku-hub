@@ -3,6 +3,8 @@
   "url"          : "https://github.com/M0ses/kanku-hub",
   "repositories" : {
     "JFT" : {
+      "title" : "Just For Testing",
+      "description" : "This project is the kanku developers playground",
       "KankuFiles": [
 	{
 	  "name" : "Example",
@@ -10,6 +12,43 @@
 	  "path" : "KankuFile"
 	}
       ]
+    },
+    "opensuse" : {
+      "title" : "openSUSE images and projects",
+      "description" : "This project contains official openSUSE images and projects",
+      "repositories" : [
+	"obs": 1,
+	"openqa": 1,
+	"vagrant": 1,
+	"rabbitmq": 1
+      ],
+      "KankuFiles": [
+	{
+	  "name" : "openSUSE images and projects",
+	  "description" : "This repository",
+	  "path" : "KankuFile"
+	}
+      ]
+    },
+    "fedora" : {
+      "title" : "Fedora Images",
+      "description" : "This project contains Fedora images from [devel:kanku:images](https://build.opensuse.org/project/show/devel:/kanku:/images/)"
+    },
+    "centos" : {
+      "title" : "CentOS Images",
+      "description" : "This project contains CentOS images from [devel:kanku:images](https://build.opensuse.org/project/show/devel:/kanku:/images/)"
+    },
+    "ubuntu" : {
+      "title" : "Ubuntu Images",
+      "description" : "This project contains Ubuntu images from [devel:kanku:images](https://build.opensuse.org/project/show/devel:/kanku:/images/)"
+    },
+    "debian" : {
+      "title" : "Debian Images",
+      "description" : "This project contains Debian images from [devel:kanku:images](https://build.opensuse.org/project/show/devel:/kanku:/images/)"
+    },
+    "examples" : {
+      "title" : "Example KankuFile's",
+      "description" : "This project contains examples of KankuFile's demontrating special features or setup scenarios."
     }
   }
 }

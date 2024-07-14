@@ -4,8 +4,8 @@
 
 The idea of having a "Kanku Hub" is quite old, but this project is quite new.
 
-ATM we are testing ideas and 
-try to find the most comfortable, useful and secure way to implement it.
+ATM we are testing ideas and try to find the most comfortable, useful and
+secure way to implement it.
 
 **Please dont start crying if things change faster than you expected.**
 
