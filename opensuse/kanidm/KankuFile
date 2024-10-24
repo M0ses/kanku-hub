@@ -1,10 +1,10 @@
-domain_name: kanidm
-default_job: kanku-job
+domain_name: idm
+default_job: idm
 login_user: root
 login_pass: kankudai
 
 jobs:
- kanku-job:
+ idm:
   -
     use_module: Kanku::Handler::SetJobContext
     options:
@@ -38,15 +38,41 @@ jobs:
         # Install recommended packages
         - zypper -n in easy-rsa hostname bind-utils
         - zypper -n in kanidm kanidm-server kanidm-clients openssl hostname bind-utils
-        - perl -p -i -e 's/idm.example.com/kanidm.kanku.site/' /etc/kanidm/server.toml
+        - perl -p -i -e 's/idm.example.com/idm.kanku.devel/' /etc/kanidm/server.toml
         - mkdir -p /var/lib/private/kanidm/
-        - echo -en "DE\nBavaria\nNuremberg\nKanIDM Test\nKanIDM Test CA\nidm.kanku.site\n\n"|openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -keyout /var/lib/private/kanidm/key.pem -out /var/lib/private/kanidm/chain.pem
+        #- chmod 750 /var/lib/private/
+        #- chgrp 61388 /var/lib/private/
+        - echo -en "DE\nBavaria\nNuremberg\nKanIDM Test\nKanIDM Test CA\nidm.kanku.devel\n\n"|openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -keyout /var/lib/private/kanidm/key.pem -out /var/lib/private/kanidm/chain.pem
+        - cp /var/lib/private/kanidm/chain.pem /etc/pki/trust/anchors/local_ca.pem
+        - update-ca-certificates 
         - chown 61388:61388 -R /var/lib/private/kanidm/
         - systemctl enable --now kanidmd
-        - kanidmd recover-account admin > admin.log
-        - kanidmd recover-account idm_admin > idm_admin.log
-    use_module: Kanku::Handler::ExecuteCommandViaSSH
-    options:
-      username: kanku
-      commands:
-        - kanidm login --name idm_admin --url https://kanidm.kanku.site:443 --ca /var/lib/private/kanidm/chain.pem
+        - kanidmd recover-account admin > /home/kanku/admin.log
+        - kanidmd recover-account idm_admin > /home/kanku/idm_admin.log
+# FIXME: Find a way to pass the password to kanidm
+#  -
+#    use_module: Kanku::Handler::ExecuteCommandViaSSH
+#    options:
+#      username: kanku
+#      commands:
+#        - echo hallo|kanidm login --name idm_admin --url https://idm.kanku.devel:443
+notifiers:
+  idm:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** To test your setup try to login into kanidm with the users admin/idm_admin
+          ****
+          # [% "kanku ssh" |color 'blue' +%]
+          # [% "kanidm login --name idm_admin --url https://idm.kanku.devel:443" |color 'blue' +%]
+          ****
+          **** You can find the passwords the following file:
+          ****
+          **** [% "/home/kanku/admin.log" |color 'yellow' +%]
+          **** [% "/home/kanku/idm_admin.log" |color 'yellow' +%]
+          ****
+          ****
+      states: succeed
