@@ -7,4 +7,5 @@ options:
     - "command ansible-playbook --version 2>/dev/null || { echo 'Please install ansible on your Kanku host'; exit 1; }"
     - echo "$IPADDRESS vagranku-guest" >> /etc/hosts
     - ssh-keyscan vagranku-guest >> ~/.ssh/known_hosts
+    - kanku ssh -u root -e 'zypper -n in python3-base'
     - eval `ssh-agent`;ssh-add;ansible-playbook  -i /tmp/kanku/guest.d/inventory.yaml --extra-vars "variable_host=vagranku-guest"  /tmp/kanku/guest.d/playbooks/dummyplaybook.yaml
