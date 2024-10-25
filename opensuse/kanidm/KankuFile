@@ -1,3 +1,13 @@
+info:
+  summary: Install and setup kanidm on openSUSE Tumbleweed JeOS image
+  description: |+
+               This KankuFile
+
+               * download the latest dki openSUSE Tumbleweed image
+               * install kanidm
+               * create self-signed CA certificate
+               * setup kanidm
+
 domain_name: idm
 default_job: idm
 login_user: root
