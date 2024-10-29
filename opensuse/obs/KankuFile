@@ -8,7 +8,7 @@ jobs:
     -
       use_module: Kanku::Handler::OBSCheck
       options:
-        project: home:M0ses:OBS:Server:Unstable
+        project: OBS:Server:Unstable
         package: OBS-Appliance:qcow2
     -
       use_module: Kanku::Handler::ImageDownload
@@ -33,6 +33,7 @@ jobs:
           - systemctl restart apache2
           - logger -t kanku-job "installing test packages"
           - zypper -n --gpg-auto-import-keys ref -s
+          - zypper -n dup --allow-vendor-change
           - zypper -n in obs-tests-appliance-`rpm -q --qf "%{version}" obs-server` obs-backend-testsuite-`rpm -q --qf "%{version}" obs-server`
           - logger -t kanku-job "Configuring mysql client access"
           - echo -en "[client]\nuser = root\npassword = opensuse\n" > /root/.my.cnf
