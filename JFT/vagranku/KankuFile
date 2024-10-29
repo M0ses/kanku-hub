@@ -52,7 +52,7 @@ jobs:
         - ssh-keygen -N "" -f .ssh/id_ed25519
         - ln -sf /tmp/kanku/guest.d/
         - kanku init -T vagrant -d vagranku-guest
-        - echo "  - !include guest.d/run_ansible.yml" >> KankuFile
+        - perl -p -i -e 's#\s+- echo "Just testing ssh connection"#  - !include guest.d/run_ansible.yml#' KankuFile
         - eval `ssh-agent`;ssh-add;kanku up --skip_all_checks
   -
     use_module: Kanku::Handler::ExecuteCommandViaSSH
