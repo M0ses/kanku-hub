@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Test::More;
+use File::Find;
+use Data::Dumper;
+use Path::Tiny;
+
+my $cwd = Path::Tiny->cwd;
+my $bindir = path($0)->parent->realpath;
+
+print "$bindir\n";
+
+my @files;
+find(
+  sub { 
+    if ($File::Find::name ne "$bindir/KankuFile") {
+      $_ =~ m/^KankuFile.*/ && push @files, path($File::Find::name);
+    }
+  },
+  $bindir
+);
+
+plan tests => @files * 2;
+
+for my $kf (@files) {
+  my $d = $kf->parent;
+  my $du = $kf->stringify;
+  $du =~ s#^$cwd/(.*)#$1#;
+  $du =~ s#/KankuFile$##g;
+  my $m = "Checking 'kanku %s $du";
+  $du =~ s#/#_#g;
+  my $l = path($cwd, ".log/$du.log");
+  chdir $d;
+  `kanku destroy > $l 2>&1`;
+  ok($? == 0, sprintf($m, 'destroy'));
+  `kanku up >> $l 2>&1`;
+  ok($? == 0, sprintf($m, 'up'));
+}
+
+exit 0;
+
+__END__
+#!/usr/bin/bash
+
+B=`dirname $0`
+C=`pwd`
+
+[ -d $B/.log ] || mkdir -p $B/.log
+
+for k in $(find -name KankuFile*);do
+  P=`dirname $k`
+  F=`basename $k`
+  L=`echo $P|perl -p -e 's#/#_#g'`
+  pushd .
+  cd $P
+  export KANKU_CONFIG=$F
+  kanku destroy && { kanku up > $B/.log/$L 2>&1 || echo $k >> $B/.log/failed.log; } && kanku destroy
+  popd
+done
