@@ -9,8 +9,13 @@ use Path::Tiny;
 
 my $cwd = Path::Tiny->cwd;
 my $bindir = path($0)->parent->realpath;
+my $logdir = path($cwd, '.log');
 
-print "$bindir\n";
+if ($logdir->exists) {
+  $_->remove for $logdir->children;
+} else{
+  $logdir->mkdir;
+}
 
 my @files;
 find(
@@ -31,7 +36,7 @@ for my $kf (@files) {
   $du =~ s#/KankuFile$##g;
   my $m = "Checking 'kanku %s $du";
   $du =~ s#/#_#g;
-  my $l = path($cwd, ".log/$du.log");
+  my $l = path($logdir, "/$du.log");
   chdir $d;
   `kanku destroy > $l 2>&1`;
   ok($? == 0, sprintf($m, 'destroy'));
