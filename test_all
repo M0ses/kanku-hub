@@ -38,7 +38,11 @@ for my $kf (@files) {
   $du =~ s#/#_#g;
   my $l = path($logdir, "/$du.log");
   chdir $d;
-  `kanku destroy > $l 2>&1`;
+  `kanku verify >> $l 2>&1`;
+  ok($? == 0, sprintf($m, 'verify'));
+  `kanku info >> $l 2>&1`;
+  ok($? == 0, sprintf($m, 'info'));
+  `kanku destroy >> $l 2>&1`;
   ok($? == 0, sprintf($m, 'destroy'));
   `kanku up >> $l 2>&1`;
   ok($? == 0, sprintf($m, 'up'));
