@@ -1,0 +1,37 @@
+info:
+  summary: Create virtual machine from devel:kanku:images/CentOS-8
+  description: |+
+               This KankuFile creates a virtual machine from devel:kanku:images/CentOS-8
+
+domain_name: centos-8
+default_job: kanku-job
+login_user: root
+login_pass: kankudai
+
+jobs:
+ kanku-job:
+  -
+    use_module: Kanku::Handler::SetJobContext
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      project: devel:kanku:images
+      repository: images_centos_8
+      package: CentOS-8
+      skip_all_checks: 1
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 2G
+      vcpu: 2
+      use_9p: 0
+      root_disk_size: 40G
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        - echo "Hello World" > /tmp/test.log
