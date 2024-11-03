@@ -1,0 +1,79 @@
+info:
+  summary: Create two openSUSE Tumbleweed virtual machines
+  description: |+
+               This KankuFile is an example how to install multiple VM's in one KankuFile
+
+               The following VM's are create:
+
+               * kanku-vm1
+               * kanku-vm2
+
+               Use `kanku destroy` to delete the first VM (kanku-vm1).
+               You can delete both machines at once by executing
+               #
+               # kanku up -j clean --skip_check_domain
+               #
+
+
+domain_name: kanku-vm1
+default_job: multivm
+login_user: root
+login_pass: kankudai
+
+jobs:
+ multivm:
+  -
+    use_module: Kanku::Handler::RemoveDomain
+    options:
+      domain_name: kanku-vm1
+  -
+    use_module: Kanku::Handler::RemoveDomain
+    options:
+      domain_name: kanku-vm2
+  -
+    use_module: Kanku::Handler::SetJobContext
+    options:
+      host_interface: eth0
+      domain_name: kanku-vm1
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      # Please have a look at
+      # https://build.opensuse.org/project/show/home:M0ses:kanku:Images
+      # to find more official Images
+      project: devel:kanku:images
+      repository: images_leap_15_4
+      package: openSUSE-Leap-15.4-JeOS
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 2097152
+      vcpu: 2
+      use_9p: 1
+      #forward_port_list: tcp:22,tcp:443
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::SetJobContext
+    options:
+      host_interface: eth0
+      domain_name: kanku-vm2
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 2G
+      vcpu: 2
+  -
+    use_module: Kanku::Handler::PrepareSSH
+
+ clean:
+  -
+    use_module: Kanku::Handler::RemoveDomain
+    options:
+      domain_name: kanku-vm1
+  -
+    use_module: Kanku::Handler::RemoveDomain
+    options:
+      domain_name: kanku-vm2
