@@ -21,13 +21,13 @@ my @files;
 find(
   sub { 
     if ($File::Find::name ne "$bindir/KankuFile") {
-      $_ =~ m/^KankuFile.*/ && push @files, path($File::Find::name);
+      $_ =~ m/^KankuFile$/ && push @files, path($File::Find::name);
     }
   },
   $bindir
 );
 
-plan tests => @files * 2;
+plan tests => @files * 5;
 
 for my $kf (@files) {
   my $d = $kf->parent;
@@ -46,6 +46,8 @@ for my $kf (@files) {
   ok($? == 0, sprintf($m, 'destroy'));
   `kanku up >> $l 2>&1`;
   ok($? == 0, sprintf($m, 'up'));
+  `kanku destroy >> $l 2>&1`;
+  ok($? == 0, sprintf($m, 'destroy'));
 }
 
 exit 0;
