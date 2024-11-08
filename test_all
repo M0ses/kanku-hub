@@ -2,6 +2,8 @@
 
 use strict;
 use warnings;
+
+use YAML::PP;
 use Test::More;
 use File::Find;
 use Data::Dumper;
@@ -17,37 +19,71 @@ if ($logdir->exists) {
   $logdir->mkdir;
 }
 
-my @files;
-find(
-  sub { 
-    if ($File::Find::name ne "$bindir/KankuFile") {
-      $_ =~ m/^KankuFile$/ && push @files, path($File::Find::name);
+my @files = (@ARGV > 0) ? @ARGV : ();
+
+if (@files < 1) {
+  find(
+    sub { 
+      if ($File::Find::name ne "$bindir/KankuFile") {
+	$_ =~ m/^KankuFile$/ && push @files, $File::Find::name;
+      }
+    },
+    $bindir
+  );
+}
+
+my $tmpdir = Path::Tiny->tempdir;
+
+$::ENV{GNUPGHOME} = $tmpdir->stringify;
+
+my @gpgimport = `gpg --import $bindir/_maintainers/*.asc 2>&1`;
+
+my %dirs2test;
+my $no_of_tests = 0;
+
+for my $f (@files) {
+  my $kf    = path($f);
+  my $dir   = $kf->parent;
+  my $cicd  = path($dir, '.kanku', 'cicd.yml');
+  my @tests = (['verify'], ['info'], ['destroy']);
+  if ($cicd->is_file) {
+    my $ypp = YAML::PP->new;
+    my $yml = $ypp->load_file($cicd);
+    for my $t (@{$yml->{tests}->{order}}) {
+      my @type = grep { $t->{type} eq $_ } qw/jobs job_groups/;
+      croak("Unkown type: '$t->{type}'") unless (@type);
+      if ($type[0] eq 'jobs') {
+	for my $tt (@{$t->{$type[0]}}) {
+	  push @tests, ['up', '--job_name', $tt], ['destroy'];
+	}
+      }
+      if ($type[0] eq 'job_groups') {
+	for my $tt (@{$t->{$type[0]}}) {
+	  push @tests, ['up', '--job_group', $tt];
+	}
+      }
     }
-  },
-  $bindir
-);
+  } else {
+    push @tests, ['up'], ['destroy'];
+  }
+  $dirs2test{$dir->stringify} = \@tests;
+  $no_of_tests += scalar @tests;
+}
 
-plan tests => @files * 5;
+plan tests => $no_of_tests;
 
-for my $kf (@files) {
-  my $d = $kf->parent;
-  my $du = $kf->stringify;
+while (my ($d, $tests) = each %dirs2test) {
+  my $du = $d;
   $du =~ s#^$cwd/(.*)#$1#;
-  $du =~ s#/KankuFile$##g;
-  my $m = "Checking 'kanku %s $du";
+  my $m = "Checking $du '%s'";
   $du =~ s#/#_#g;
   my $l = path($logdir, "/$du.log");
   chdir $d;
-  `kanku verify >> $l 2>&1`;
-  ok($? == 0, sprintf($m, 'verify'));
-  `kanku info >> $l 2>&1`;
-  ok($? == 0, sprintf($m, 'info'));
-  `kanku destroy >> $l 2>&1`;
-  ok($? == 0, sprintf($m, 'destroy'));
-  `kanku up >> $l 2>&1`;
-  ok($? == 0, sprintf($m, 'up'));
-  `kanku destroy >> $l 2>&1`;
-  ok($? == 0, sprintf($m, 'destroy'));
+  for my $tc (@{$tests}) {
+    my $cmd = 'kanku ' . join(' ', @{$tc});
+    `$cmd >> $l 2>&1`;
+    ok($? == 0, sprintf($m, $cmd));
+  }
 }
 
 exit 0;
