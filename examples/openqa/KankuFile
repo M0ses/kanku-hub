@@ -1,3 +1,9 @@
+info:
+  summary: Create a VM with an installed and configured openqa
+  description: |+
+               This KankuFile creates a VM based on dki/tumbleweed and 
+               installs/configures openQA
+
 domain_name: openqa
 default_job: tasks
 login_user: root

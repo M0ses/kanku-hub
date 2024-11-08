@@ -1,8 +1,13 @@
-#
-# domain_name needs to be called `salt`.
-# Mnions try to connect salt.their.domain.com in the default
-# configuration, so no additional configuration required on the minion.
-#
+info:
+  summary: Leap 15.6 with salt-master
+  description: |+
+               This KankuFile creates a VM based on openSUSE Leap 15.6 dki image
+               Finally it installs salt-master and salt-minion
+
+               domain_name needs to be `salt`.
+               Mnions try to connect salt.their.domain.com in the default
+               configuration, so no additional configuration required on the minion.
+               
 domain_name: salt
 default_job: tasks
 login_user: root
@@ -11,13 +16,8 @@ login_pass: kankudai
 jobs:
  tasks:
   -
-    use_module: Kanku::Handler::SetJobContext
-    options:
-      host_interface: eth0
-  -
     use_module: Kanku::Handler::OBSCheck
     options:
-      api_url: https://api.opensuse.org/public
       project: devel:kanku:images
       package: openSUSE-Leap-15.6-JeOS
       repository: images_leap_15_6
@@ -26,13 +26,12 @@ jobs:
   -
     use_module: Kanku::Handler::CreateDomain
     options:
+      management_interface: eth0
       memory: 4G
       vcpu: 4
       use_9p: 1
-      management_interface: eth0
   -
     use_module: Kanku::Handler::PrepareSSH
-  # Kanku::Handler::CopyProfile configuration in kanku-config.yml required
   -
     use_module: Kanku::Handler::CopyProfile
   -

@@ -1,3 +1,9 @@
+info:
+  summary: Tumbleweed with rabbitmq
+  description: |+
+               This KankuFile creates a VM based on openSUSE Tumbleweeds dki image
+               and installs rabbitmq
+
 domain_name: rabbitmq
 default_job: tasks
 login_user: root
@@ -7,16 +13,12 @@ jobs:
  tasks:
   -
     use_module: Kanku::Handler::SetJobContext
-    options:
-      host_interface: eth0
   -
     use_module: Kanku::Handler::OBSCheck
     options:
-      api_url: https://api.opensuse.org/public/
       project: devel:kanku:images
       package: openSUSE-Tumbleweed-JeOS:ext4
       repository: images_tumbleweed
-      arch: x86_64
   -
     use_module: Kanku::Handler::ImageDownload
   -
@@ -40,11 +42,10 @@ jobs:
         - perl -p -i -e 's/127.0.0.1/0.0.0.0/' /etc/systemd/system/epmd.socket
         # reload systemd
         - systemctl daemon-reload
-        - systemctl start epmd
-        #- systemctl enable epmd
+        - systemctl enable --now epmd.service
         - zypper -n in rabbitmq-server rabbitmq-server-plugins
         - systemctl start rabbitmq-server
-        - systemctl enable rabbitmq-server
+        - systemctl enable --now rabbitmq-server
   -
     use_module: Kanku::Handler::WaitForSystemd
   -
@@ -55,7 +56,7 @@ jobs:
         - rabbitmqctl set_permissions -p / opensuse ".*" ".*" ".*"
         - rabbitmqctl set_user_tags opensuse administrator
         - rabbitmq-plugins enable rabbitmq_management
-        - rcrabbitmq-server restart
+        - systemctl restart rabbitmq-server
         - curl -o /root/bin/rabbitmqadmin http://localhost:15672/cli/rabbitmqadmin
         - chmod 700 /root/bin/rabbitmqadmin
         - /root/bin/rabbitmqadmin declare exchange name=pubsub type=topic auto_delete=false durable=true internal=false

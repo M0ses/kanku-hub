@@ -1,3 +1,17 @@
+info:
+  summary: Create a VM with an installed and configured obs-server
+  description: |+
+               This KankuFile has multiple jobs to offer:
+
+               # appliance
+
+               Install and configure the appliance image from OBS:Server:Unstable/OBS-Appliance:qcow2
+
+               # tumbleweed
+
+               Create a VM based on dki/tumbleweed and 
+               install/configure OBS:Server:Unstable/obs-server
+
 domain_name: obs
 default_job: appliance
 login_user: root
@@ -10,6 +24,7 @@ jobs:
       options:
         project: OBS:Server:Unstable
         package: OBS-Appliance:qcow2
+        skip_all_checks: 1
     -
       use_module: Kanku::Handler::ImageDownload
     -
@@ -18,7 +33,7 @@ jobs:
         memory: 6G
         vcpu: 2
         use_9p: 1
-        template: with-spice
+        #template: with-spice
     -
       use_module: Kanku::Handler::PrepareSSH
     -
@@ -98,6 +113,7 @@ jobs:
       options:
         username: root
         commands:
+          - false
           - cp -av /tmp/kanku/ .
           - make -C /root/kanku/dist test_system
           - PERL5LIB=/usr/lib/build/ make -C /root/kanku/src/backend test_unit

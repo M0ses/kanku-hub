@@ -1,4 +1,8 @@
-#
+info:
+  summary: JFT - using kanku with vagrant boxes
+  description: |+
+               FIXME - detailed description required
+
 domain_name: vagranku-host
 default_job: vagrant-ansible
 login_user: root
