@@ -1,7 +1,8 @@
-summary: Official openSUSE 15.6 minimal image
-description: |+
-             This KanuFile downloads and creates a virtual machine of the
-             official openSUSE-Leap-15.6-Minimal-VM image
+info:
+  summary: Official openSUSE 15.6 minimal image
+  description: |+
+               This KanuFile downloads and creates a virtual machine of the
+               official openSUSE-Leap-15.6-Minimal-VM image
 
 domain_name: opensuse-leap-15-6
 default_job: kanku-job
