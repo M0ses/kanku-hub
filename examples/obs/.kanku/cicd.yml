@@ -1,0 +1,7 @@
+tests:
+  order:
+    -
+      type: jobs
+      jobs:
+        - appliance
+        - tumbleweed
