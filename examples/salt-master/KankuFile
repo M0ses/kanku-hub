@@ -26,7 +26,6 @@ jobs:
   -
     use_module: Kanku::Handler::CreateDomain
     options:
-      management_interface: eth0
       memory: 4G
       vcpu: 4
       use_9p: 1

@@ -82,7 +82,6 @@ jobs:
         memory: 6G
         vcpu: 2
         use_9p: 1
-        management_interface: eth0
     -
       use_module: Kanku::Handler::PrepareSSH
     -
