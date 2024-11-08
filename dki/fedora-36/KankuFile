@@ -1,0 +1,34 @@
+info:
+  summary: Create a VM based on devel:kanku:images Fedora 36
+  description: |+
+               This KanuFile creates a VM based on devel:kanku:images (dki) Fedora-36 image
+
+domain_name: fedora-36
+default_job: default
+login_user: root
+login_pass: kankudai
+
+jobs:
+  default:
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      project: devel:kanku:images
+      package: Fedora-36
+      repository: images_fedora_36
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      management_interface: lan0
+      memory: 2G
+      vcpu: 2
+      use_9p: 1
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        - echo "Just for testing ssh connection" > /tmp/test.log 2>&1
