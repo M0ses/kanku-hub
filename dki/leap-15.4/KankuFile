@@ -1,30 +1,35 @@
-domain_name: kanku-leap-vmdk
-default_job: kanku-job
+info:
+  summary: Create a VM based on devel:kanku:images Leap 15.4
+  description: |+
+               This KanuFile downloads a minimal Leap 15.4 image from 
+               devel:kanku:images and creates a VM
+
+domain_name: dki-leap-15-4
+default_job: tasks
 login_user: root
 login_pass: kankudai
 
 jobs:
- kanku-job:
-  -
-    use_module: Kanku::Handler::SetJobContext
-  -
-    use_module: Kanku::Handler::OBSCheck
-    options:
-      project: devel:kanku:images
-      repository: images_leap_15_4
-      package: openSUSE-Leap-15.4-JeOS
-  -
-    use_module: Kanku::Handler::ImageDownload
-  -
-    use_module: Kanku::Handler::CreateDomain
-    options:
-      memory: 2G
-      vcpu: 2
-      use_9p: 1
-  -
-    use_module: Kanku::Handler::PrepareSSH
-  -
-    use_module: Kanku::Handler::ExecuteCommandViaSSH
-    options:
-      commands:
-        - echo "my test here" > /tmp/test.log
+  tasks:
+    -
+      use_module: Kanku::Handler::OBSCheck
+      options:
+        project: devel:kanku:images
+        repository: images_leap_15_4
+        package: openSUSE-Leap-15.4-JeOS
+    -
+      use_module: Kanku::Handler::ImageDownload
+    -
+      use_module: Kanku::Handler::CreateDomain
+      options:
+        management_interface: eth0
+        memory: 2G
+        vcpu: 2
+        use_9p: 1
+    -
+      use_module: Kanku::Handler::PrepareSSH
+    -
+      use_module: Kanku::Handler::ExecuteCommandViaSSH
+      options:
+        commands:
+          - echo "Just for testing ssh connection" > /tmp/test.log 2>&1
