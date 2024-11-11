@@ -54,12 +54,12 @@ for my $f (@files) {
       croak("Unkown type: '$t->{type}'") unless (@type);
       if ($type[0] eq 'jobs') {
 	for my $tt (@{$t->{$type[0]}}) {
-	  push @tests, ['up', '--job_name', $tt], ['destroy'];
+	  push @tests, ['up', '-j', $tt], ['destroy'];
 	}
       }
       if ($type[0] eq 'job_groups') {
 	for my $tt (@{$t->{$type[0]}}) {
-	  push @tests, ['up', '--job_group', $tt];
+	  push @tests, ['up', '--jg', $tt];
 	}
       }
     }
@@ -81,7 +81,8 @@ while (my ($d, $tests) = each %dirs2test) {
   chdir $d;
   for my $tc (@{$tests}) {
     my $cmd = 'kanku ' . join(' ', @{$tc});
-    `$cmd >> $l 2>&1`;
+    print "$cmd\n" if $::ENV{DEBUG};
+    `$cmd --ll TRACE >> $l 2>&1`;
     ok($? == 0, sprintf($m, $cmd));
   }
 }
