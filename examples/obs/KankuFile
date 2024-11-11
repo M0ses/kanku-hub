@@ -90,7 +90,7 @@ jobs:
       use_module: Kanku::Handler::ExecuteCommandViaSSH
       options:
         commands:
-          - 'zypper ar https://cdn.opensuse.org/repositories/OBS:/Server:/Unstable/openSUSE_Tumbleweed/OBS:Server:Unstable.repo'
+          - zypper ar https://download.opensuse.org/repositories/OBS:/Server:/Unstable/openSUSE_Factory/OBS:Server:Unstable.repo
           - zypper -n --gpg-auto-import-keys ref -s
           - zypper -n install obs-server obs-api obs-worker obs-signd obs-service-tar_scm obs-service-obs_scm obs-service-set_version obs-service-tar
           - perl -p -i -e 's/^OBS_API_AUTOSETUP=.*/OBS_API_AUTOSETUP="yes"/' /etc/sysconfig/obs-server
