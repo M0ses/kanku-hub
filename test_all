@@ -41,7 +41,7 @@ my @gpgimport = `gpg --import $bindir/_maintainers/*.asc 2>&1`;
 my %dirs2test;
 my $no_of_tests = 0;
 
-for my $f (@files) {
+for my $f (sort @files) {
   my $kf    = path($f);
   my $dir   = $kf->parent;
   my $cicd  = path($dir, '.kanku', 'cicd.yml');
@@ -72,7 +72,8 @@ for my $f (@files) {
 
 plan tests => $no_of_tests;
 
-while (my ($d, $tests) = each %dirs2test) {
+for my $d (sort keys(%dirs2test)) {
+  my $tests = $dirs2test{$d};
   my $du = $d;
   $du =~ s#^$cwd/(.*)#$1#;
   my $m = "Checking $du '%s'";
@@ -88,22 +89,3 @@ while (my ($d, $tests) = each %dirs2test) {
 }
 
 exit 0;
-
-__END__
-#!/usr/bin/bash
-
-B=`dirname $0`
-C=`pwd`
-
-[ -d $B/.log ] || mkdir -p $B/.log
-
-for k in $(find -name KankuFile*);do
-  P=`dirname $k`
-  F=`basename $k`
-  L=`echo $P|perl -p -e 's#/#_#g'`
-  pushd .
-  cd $P
-  export KANKU_CONFIG=$F
-  kanku destroy && { kanku up > $B/.log/$L 2>&1 || echo $k >> $B/.log/failed.log; } && kanku destroy
-  popd
-done
