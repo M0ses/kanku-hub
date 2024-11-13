@@ -1,8 +1,9 @@
 #!/usr/bin/bash
 BD=$(dirname $0)/
+FL=$(find -name KankuFile|sort)
 case $1 in 
   check)
-    for kf in $(find -name KankuFile);do
+    for kf in $FL;do
       P=`dirname $kf`
       F=`basename $kf`
       T=$(echo $P|perl -p -e "s#$BD##"|perl -p -e 's#/#.#g')
@@ -10,11 +11,11 @@ case $1 in
       gpg --verify $F.asc >> /dev/null 2>&1 \
 	&& echo "ok - $T" \
 	|| echo "not ok - $T"
-      cd -
+      cd - 1>/dev/null
     done
   ;;
   sign)
-    for kf in $(find -name KankuFile);do
+    for kf in $FL;do
       P=`dirname $kf`
       F=`basename $kf`
       cd $P
@@ -25,7 +26,7 @@ case $1 in
           rm -f $F.asc
 	  gpg -b -a $F
         }
-      cd -
+      cd - 1>/dev/null
     done
   ;;
   *)
