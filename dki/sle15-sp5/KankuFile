@@ -1,10 +1,13 @@
 info:
-  summary: SHORT DESCRIPTION OF YOUR KankuFile
+  summary: Create VM based on devel:kanku:images/SLES-15-SP5-JeOS
   description: |+
-               # Here you can add a description of your KankuFile
-               # Please describe its purpose and what it's doing.
-               #
-               # Enjoy YLWK!
+               This KankuFile does the following steps:
+                 * download the dki image file
+                 * create a VM
+                 * do a ssh connection test to the newly created VM
+
+               Enjoy YLWK!
+
 domain_name: dki-sle15-sp5
 default_job: tasks
 login_user: root
@@ -19,13 +22,9 @@ jobs:
   -
     use_module: Kanku::Handler::OBSCheck
     options:
-      # Please have a look at
-      # kanku lsi
-      # to find more official Images
       project: devel:kanku:images
       package: SLES-15-SP5-JeOS
       repository: images_sle15_sp5
-      use_oscrc: 0
   -
     use_module: Kanku::Handler::ImageDownload
   -
@@ -34,13 +33,6 @@ jobs:
       memory: 2G
       vcpu: 2
       use_9p: 1
-
-      # Please be aware that enabling a pool my bind a KankuFile to specific
-      # libvirtd configuration.
-      # KankuFiles containing the pool parameter are not supposed to be commited
-      # into projects SCM's
-      # pool_name: default
-
   -
     use_module: Kanku::Handler::PrepareSSH
   # Kanku::Handler::CopyProfile configuration in kanku-config.yml required
