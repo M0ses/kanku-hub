@@ -20,7 +20,6 @@ jobs:
       project: devel:kanku:images
       package: openSUSE-Tumbleweed-JeOS:ext4
       repository: images_tumbleweed
-      arch: x86_64
   -
     use_module: Kanku::Handler::ImageDownload
   -

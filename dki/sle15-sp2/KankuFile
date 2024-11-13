@@ -19,14 +19,12 @@ jobs:
   -
     use_module: Kanku::Handler::OBSCheck
     options:
-      obsurl: https://build.opensuse.org/public
       # Please have a look at
       # kanku lsi
       # to find more official Images
       project: devel:kanku:images
       package: SLES-15-SP2-JeOS
       repository: images_sle15_sp2
-      arch: x86_64
       use_oscrc: 0
   -
     use_module: Kanku::Handler::ImageDownload

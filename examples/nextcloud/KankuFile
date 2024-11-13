@@ -19,11 +19,9 @@ jobs:
   -
     use_module: Kanku::Handler::OBSCheck
     options:
-      obsurl: https://build.opensuse.org/public
       project: devel:kanku:images
       package: openSUSE-Tumbleweed-JeOS:ext4
       repository: images_tumbleweed
-      arch: x86_64
       use_oscrc: 0
   -
     use_module: Kanku::Handler::ImageDownload
