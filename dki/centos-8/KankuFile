@@ -3,7 +3,7 @@ info:
   description: |+
                This KankuFile creates a virtual machine from devel:kanku:images/CentOS-8
 
-domain_name: centos-8
+domain_name: dki-centos-8
 default_job: kanku-job
 login_user: root
 login_pass: kankudai
