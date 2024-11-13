@@ -8,6 +8,7 @@ use Test::More;
 use File::Find;
 use Data::Dumper;
 use Path::Tiny;
+use Kanku::Util;
 
 my $cwd = Path::Tiny->cwd;
 my $bindir = path($0)->parent->realpath;
@@ -40,6 +41,7 @@ my @gpgimport = `gpg --import $bindir/_maintainers/*.asc 2>&1`;
 
 my %dirs2test;
 my $no_of_tests = 0;
+my $arch        = Kanku::Util->get_arch;
 
 for my $f (sort @files) {
   my $kf    = path($f);
@@ -49,6 +51,8 @@ for my $f (sort @files) {
   if ($cicd->is_file) {
     my $ypp = YAML::PP->new;
     my $yml = $ypp->load_file($cicd);
+    my @exclude = grep { $_ eq $arch } @{$yml->{tests}->{arch}->{exclude}||[]};
+    next if @exclude;
     for my $t (@{$yml->{tests}->{order}}) {
       my @type = grep { $t->{type} eq $_ } qw/jobs job_groups/;
       croak("Unkown type: '$t->{type}'") unless (@type);
