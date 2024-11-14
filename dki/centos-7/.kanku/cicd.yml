@@ -1,0 +1,5 @@
+tests:
+  arch:
+    exclude:
+      - aarch64
+      - x86_64
