@@ -37,11 +37,15 @@ jobs:
     use_module: Kanku::Handler::ExecuteCommandViaSSH
     options:
       commands:
+        - ls -la /home/ >> /tmp/perms.log
         - zypper ar obs://devel:kanku:staging dks
         - zypper --gpg-auto-import-keys ref -s
         - zypper -n in kanku-cli make ansible qemu-spice
-        - kanku setup --devel --user kanku
+        - ls -la /home/ >> /tmp/perms.log
+        - kanku setup devel --user kanku
+        - ls -la /home/ >> /tmp/perms.log
         - "chown kanku -R /home/kanku/.ssh"
+        - ls -la /home/ >> /tmp/perms.log
         # FIXME:
         # This workaround ugly and insecure but ATM required
         # The vagrant images do not register their hostname properly
@@ -53,7 +57,6 @@ jobs:
       username: kanku
       commands:
         - ssh-keygen -N "" -f .ssh/id_ed25519
-        - ln -sf /tmp/kanku/guest.d/
         - kanku init -T vagrant -d vagranku-guest
         - perl -p -i -e 's#\s+- echo "Just testing ssh connection"#  - !include guest.d/run_ansible.yml#' KankuFile
         - eval `ssh-agent`;ssh-add;kanku up --skip_all_checks

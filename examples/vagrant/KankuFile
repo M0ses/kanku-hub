@@ -41,7 +41,7 @@ jobs:
         - zypper ar obs://devel:kanku:staging dks
         - zypper --gpg-auto-import-keys ref -s
         - zypper -n in kanku-cli qemu-spice
-        - kanku setup --devel --user kanku
+        - kanku setup devel --user kanku
         # END
         - "chown kanku -R /home/kanku/.ssh"
   -
@@ -51,4 +51,5 @@ jobs:
       commands:
         - 'ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""'
         - kanku init -T vagrant -d vagrant
+        - chmod 755 $HOME
         - kanku up
