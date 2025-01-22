@@ -1,4 +1,8 @@
-domain_name: openSUSE-Tumbleweed-sdboot
+info:
+  summary: Create VM from openSUSE Tumbleweed Minimal and install KDE
+  description: |+
+               This KankuFile creates a VM, installs KDE and configures the display-manager
+domain_name: openSUSE-Tumbleweed-kde
 default_job: kanku-job
 login_user: root
 login_pass: linux
@@ -53,6 +57,26 @@ jobs:
           send_enter: 1
         -
           expect: openSUSE Tumbleweed
+          send_enter: 1
+        -
+          expect: Disk Encryption
+          send: d
+          send_enter: 1
+        -
+          expect: Disk Encryption
+          send: d
+          send_enter: 1
+        -
+          expect: Neither password, TPM2 nor
+          send: y
+          send_enter: 1
+        -
+          expect: Do you want to configure network
+          send: n
+          send_enter: 1
+        -
+          expect: keys for SSH access?
+          send: n
           send_enter: 1
   -
     use_module: Kanku::Handler::PrepareSSH
