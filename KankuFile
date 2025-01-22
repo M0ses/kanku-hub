@@ -54,6 +54,37 @@ jobs:
         - zypper --gpg-auto-import-keys ref -s
         - zypper -n in kanku-cli
         - kanku setup --devel --user kanku
+ web:
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      project: devel:kanku:images
+      package: openSUSE-Tumbleweed-JeOS:ext4
+      repository: images_tumbleweed
+      use_oscrc: 0
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 2G
+      vcpu: 2
+      use_9p: 1
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::CopyProfile
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        - zypper ar obs://devel:kanku:staging dks
+        - zypper --gpg-auto-import-keys ref -s
+        - zypper -n in kanku-cli apache2
+        - mkdir -p /srv/www/vhosts/hub.kanku.info/
+        - git clone https://github.com/M0ses/kanku-hub /srv/www/vhosts/hub.kanku.info/htdocs/
+        - kanku setup --devel --user kanku
+
 
 job_groups:
   all:
