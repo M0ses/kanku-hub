@@ -1,17 +1,3 @@
-# Welcome to Kanku Hub!
+# KankuHub - Home of KankuFiles
 
-# Sections
-
-* dki       - Pure images from [devel:kanku:images](https://build.opensuse.org/project/show/devel:kanku:images/)
-* examples  - KankuFiles showing kanku use cases
-* JFT       - Just for Testing
-* Distros - KankuFiles creating VM's from official distro Images
-  * centos
-  * debian
-  * fedora
-  * opensuse
-  * ubuntu
-
-## JFT - Just for Testing
-
-* [JFT Image](kankus://url/to/KankuFile)
+This repository contains the code of [the official KankuHub](https://hub.kanku.info)
