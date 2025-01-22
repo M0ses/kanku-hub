@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use YAML;
+use JSON;
+use File::Find;
+use Path::Tiny;
+
+use Data::Dumper;
+
+my @KankuFiles;
+my $Data = {};
+my $SearchDir = './';
+
+find(
+  sub {
+    return if $File::Find::name =~ m#^$SearchDir[_.]#;
+    push(@KankuFiles, $File::Find::name) if ($_ eq 'KankuFile');
+  },
+  $SearchDir
+);
+
+for my $kf (@KankuFiles) {
+  my (undef, $sec, @id) = split('/', $kf);
+  pop @id;
+  my $data = YAML::LoadFile($kf);
+  die "Invalid KankuFile found ($kf)! Missing info section." unless $data->{info};
+  my $Id = join '/', @id;
+  $Data->{$sec}->{$Id}->{info} = $data->{info};
+}
+
+for my $sec (keys %{$Data}) {
+  my $of = path("$SearchDir/_kanku/sections/$sec.json");
+  $of->spew(encode_json($Data->{$sec}));
+}
+
+exit 0;

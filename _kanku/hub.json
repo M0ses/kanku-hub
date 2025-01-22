@@ -1,6 +1,7 @@
 {
   "name"         : "Kanku-Hub",
-  "url"          : "https://github.com/M0ses/kanku-hub",
+  "git_url"      : "https://github.com/M0ses/kanku-hub",
+  "url"          : "https://hub.kanku.info",
   "repositories" : {
     "JFT" : {
       "title" : "Just For Testing",
@@ -16,12 +17,6 @@
     "opensuse" : {
       "title" : "openSUSE images and projects",
       "description" : "This project contains official openSUSE images and projects",
-      "repositories" : [
-	"obs": 1,
-	"openqa": 1,
-	"vagrant": 1,
-	"rabbitmq": 1
-      ],
       "KankuFiles": [
 	{
 	  "name" : "openSUSE images and projects",
