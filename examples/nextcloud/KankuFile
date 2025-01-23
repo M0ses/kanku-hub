@@ -1,10 +1,10 @@
 info:
   summary: Installation of nextcloud on openSUSE Tumbleweed
   description: |+
-               # Here you can add a description of your KankuFile
-               # Please describe its purpose and what it's doing.
-               #
-               # Enjoy YLWK!
+               This KankuFile creates a VM based on dki/tumbleweed and installs/configures nextloud
+ 
+               Enoy YLWK
+
 domain_name: cloud
 default_job: tasks
 login_user: root
