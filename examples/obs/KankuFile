@@ -3,14 +3,12 @@ info:
   description: |+
                This KankuFile has multiple jobs to offer:
 
-               # appliance
-
-               Install and configure the appliance image from OBS:Server:Unstable/OBS-Appliance:qcow2
-
-               # tumbleweed
-
-               Create a VM based on dki/tumbleweed and 
-               install/configure OBS:Server:Unstable/obs-server
+               * appliance
+                   * Install and configure the appliance image
+                     from OBS:Server:Unstable/OBS-Appliance:qcow2
+               * tumbleweed
+                   * Create a VM based on dki/tumbleweed and
+                     install/configure OBS:Server:Unstable/obs-server
 
 domain_name: obs
 default_job: appliance
