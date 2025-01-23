@@ -10,9 +10,10 @@ info:
 
                Use `kanku destroy` to delete the first VM (kanku-vm1).
                You can delete both machines at once by executing
-               #
-               # kanku up -j clean --skip_check_domain
-               #
+
+               ``` 
+               kanku up -j clean --skip_check_domain
+               ```
 
 
 domain_name: kanku-vm1
