@@ -5,6 +5,7 @@ info:
                # Please describe its purpose and what it's doing.
                #
                # Enjoy YLWK!
+
 domain_name: kanku-hub
 default_job: tasks
 login_user: root
@@ -19,9 +20,6 @@ jobs:
   -
     use_module: Kanku::Handler::OBSCheck
     options:
-      # Please have a look at
-      # kanku lsi
-      # to find more official Images
       project: devel:kanku:images
       package: openSUSE-Tumbleweed-JeOS:ext4
       repository: images_tumbleweed
@@ -34,16 +32,8 @@ jobs:
       memory: 2G
       vcpu: 2
       use_9p: 1
-
-      # Please be aware that enabling a pool my bind a KankuFile to specific
-      # libvirtd configuration.
-      # KankuFiles containing the pool parameter are not supposed to be commited
-      # into projects SCM's
-      # pool_name: default
-
   -
     use_module: Kanku::Handler::PrepareSSH
-  # Kanku::Handler::CopyProfile configuration in kanku-config.yml required
   -
     use_module: Kanku::Handler::CopyProfile
   -
@@ -81,10 +71,9 @@ jobs:
         - zypper ar obs://devel:kanku:staging dks
         - zypper --gpg-auto-import-keys ref -s
         - zypper -n in kanku-cli apache2
-        - mkdir -p /srv/www/vhosts/hub.kanku.info/
-        - git clone https://github.com/M0ses/kanku-hub /srv/www/vhosts/hub.kanku.info/htdocs/
-        - kanku setup --devel --user kanku
-
+        - mount -o bind /tmp/kanku /srv/www/htdocs
+        - systemctl enable --now apache2
+        - kanku setup devel --user kanku
 
 job_groups:
   all:
@@ -102,5 +91,19 @@ notifiers:
           **** by
           ****   [% "kanku ssh" | color 'blue' +%]
           ****
+          **** xdg-open http://kanku-hub.kanku.devel
+        loglevel: info
       states: succeed
+  web:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** xdg-open http://kanku-hub.kanku.devel
+          ****
+        loglevel: info
+      states: succeed
+
 
