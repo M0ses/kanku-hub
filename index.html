@@ -34,7 +34,7 @@
         </div>
       </nav>
     </header>
-    <div class="main container" id="page-content">
+     <div class="main container" id="page-content">
       <div class="row">
         <div class="twelve columns">
 <h3>Welcome to KankuHub - Home of KankuFile's</h3>
@@ -53,8 +53,35 @@ KankuHub provides the following base section's:
         </div>
       </div>
     </div>
+    <div class="modal" id="urlWrapperWarning" tabindex="-1">
+      <div class="modal-dialog">
+	<!-- Modal content-->
+	<div class="modal-content">
+	  <div class="modal-header">
+	    <h4 class="modal-title">Warning</h4>
+	    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	  </div>
+	  <div class="modal-body">
+	    <p>
+	        To work properly the button <span class="btn btn-success btn-large">Start VM</span>
+		requires the kanku urlwrapper to be installed and configured properly.
+		Please use your distributions package manager to install the package "kanku-urlwrapper".
+	    </p>
+	    <p>
+	        E.g. on SUSE systems you can use:<br>
+		<code>su -c "zypper -n install kanku-urlwrapper"</code>
+	    </p>
+	    <input type="checkbox" id="dontShowWarningAgain" onchange="setWarningState(this)">&nbsp;<strong>Do no show this warning again</strong> (requires cookies).
+	  </div>
+	  <div class="modal-footer">
+	    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+	  </div>
+	</div>
+      </div>
+     </div>
     <footer></footer>
   </body>
+<script src="_app/js.cookie.min.js"></script>
 <script src="_app/bootstrap-5.3.3.bundle.min.js"></script>
 <script src="_app/showdown-2.1.0.min.js"></script>
 <script src="_app/jquery-3.7.1.min.js"></script>

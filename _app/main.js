@@ -64,11 +64,21 @@ function updateSection (section) {
 }
 
 function checkKankuUrlHandler(url) {
+  // TODO: Find possibility to check protocols registered in browser
+  var skip_warning = Cookies.get('SuppressURLWrapperWarning');
+  var dont_show = $("#dontShowWarningAgain").is(":checked")
+  if (!(dont_show || skip_warning)) {
+    $("#urlWrapperWarning").modal("show");
+  }
   document.location = url;
 }
 
-function updateUI() {
-  alert("Please install the package 'kanku-urlwrapper' with your distributions default package manager!");
+function setWarningState(box) {
+  if (box.checked) {
+    Cookies.set('SuppressURLWrapperWarning', true,{'SameSite':'Strict'});
+  } else {
+    Cookies.remove('SuppressURLWrapperWarning');
+  }
 }
 
 $(document).ready(function() {
