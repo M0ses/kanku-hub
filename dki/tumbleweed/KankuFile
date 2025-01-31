@@ -1,10 +1,11 @@
 info:
-  summary: SHORT DESCRIPTION OF YOUR KankuFile
+  summary: Create a VM based on devel:kanku:images openSUSE Tumbleweed
   description: |+
-               # Here you can add a description of your KankuFile
-               # Please describe its purpose and what it's doing.
-               #
-               # Enjoy YLWK!
+               This KanuFile downloads a minimal openSUSE Tumbleweed image
+               from devel:kanku:images and creates a VM
+
+               **Enjoy YLWK!**
+
 domain_name: dki-tumbleweed
 default_job: tasks
 login_user: root
@@ -20,9 +21,6 @@ jobs:
     use_module: Kanku::Handler::OBSCheck
     options:
       obsurl: https://build.opensuse.org/public
-      # Please have a look at
-      # kanku lsi
-      # to find more official Images
       project: devel:kanku:images
       package: openSUSE-Tumbleweed-JeOS:ext4
       repository: images_tumbleweed
@@ -36,13 +34,6 @@ jobs:
       memory: 2G
       vcpu: 2
       use_9p: 1
-
-      # Please be aware that enabling a pool my bind a KankuFile to specific
-      # libvirtd configuration.
-      # KankuFiles containing the pool parameter are not supposed to be commited
-      # into projects SCM's
-      # pool_name: default
-
   -
     use_module: Kanku::Handler::PrepareSSH
   # Kanku::Handler::CopyProfile configuration in kanku-config.yml required
