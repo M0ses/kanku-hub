@@ -50,12 +50,24 @@ class InfoBox {
   }
 }
 
+function sortObjectByKey(a, b) {
+  if      (a[0] < b[0]) { return -1 }
+  else if (a[0] > b[0]) { return  1 }
+  else                  { return  0 }
+}
+
+function sortObjectByOrder(a, b) {
+  if      (a[1]['order'] < b[1]['order']) { return -1 }
+  else if (a[1]['order'] > b[1]['order']) { return  1 }
+  else                                    { return  0 }
+}
+
 function updateSection (section) {
   $.getJSON('_kanku/sections/' + section + '.json', function (data) {
     var pc = $('#page-content');
     pc.empty();
     var html = "";
-    Object.entries(data).forEach(function(obj) {
+    Object.entries(data).sort(sortObjectByKey).forEach(function(obj) {
       var infobox = new InfoBox({'name':obj[0], 'info': obj[1]['info'], 'section': section});
       html += infobox.toHTML();
     });
@@ -81,6 +93,21 @@ function setWarningState(box) {
   }
 }
 
+function createNavBar() {
+  $.getJSON('_kanku/hub.json', function (data) {
+    $('#navbar-content').empty();
+    $('#navbar-content').append(`<a class="brand" href="/">${data.name}</a><ul>`);
+    Object.entries(data.sections).sort(sortObjectByOrder).forEach(function(obj) {
+      if (obj[1].order > 0) {
+        var sec   = obj[0];
+        var label = obj[1].label;
+        $('#navbar-content').append(`<li><a href="#section-${sec}" onclick="updateSection('${sec}')">${label}</a></li>`);
+      }
+    });
+    $('#navbar-content').append(`</ul>`);
+  });
+}
+
 $(document).ready(function() {
   var hash = window.location.hash;
   if (hash) {
@@ -88,17 +115,5 @@ $(document).ready(function() {
     updateSection(section);
   }
 
-  $(".section-selector").click(function () {
-    var hash = this.hash;
-    if (!hash) { return };
-    var section = hash.match('^#section-(.*)')[1];
-    if (section) {
-      updateSection(section);
-    } else {
-      var pc = $('#page-content');
-      pc.empty();
-      pc.append(`<div>No section seleted!</div>`);
-    };
-  });
-
+  createNavBar();
 });

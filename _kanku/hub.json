@@ -1,49 +1,36 @@
 {
-  "name"         : "Kanku-Hub",
+  "name"         : "KankuHub",
   "git_url"      : "https://github.com/M0ses/kanku-hub",
   "url"          : "https://hub.kanku.info",
-  "repositories" : {
+  "sections" : {
     "JFT" : {
-      "title" : "Just For Testing",
-      "description" : "This project is the kanku developers playground",
-      "KankuFiles": [
-	{
-	  "name" : "Example",
-	  "description" : "This file is just an example",
-	  "path" : "KankuFile"
-	}
-      ]
+      "order"       : "0",
+      "label"       : "Just for testing",
+      "title"       : "Just For Testing",
+      "description" : "This project is the kanku developers playground"
     },
     "opensuse" : {
-      "title" : "openSUSE images and projects",
-      "description" : "This project contains official openSUSE images and projects",
-      "KankuFiles": [
-	{
-	  "name" : "openSUSE images and projects",
-	  "description" : "This repository",
-	  "path" : "KankuFile"
-	}
-      ]
-    },
-    "fedora" : {
-      "title" : "Fedora Images",
-      "description" : "This project contains Fedora images from [devel:kanku:images](https://build.opensuse.org/project/show/devel:/kanku:/images/)"
-    },
-    "centos" : {
-      "title" : "CentOS Images",
-      "description" : "This project contains CentOS images from [devel:kanku:images](https://build.opensuse.org/project/show/devel:/kanku:/images/)"
-    },
-    "ubuntu" : {
-      "title" : "Ubuntu Images",
-      "description" : "This project contains Ubuntu images from [devel:kanku:images](https://build.opensuse.org/project/show/devel:/kanku:/images/)"
-    },
-    "debian" : {
-      "title" : "Debian Images",
-      "description" : "This project contains Debian images from [devel:kanku:images](https://build.opensuse.org/project/show/devel:/kanku:/images/)"
+      "order"       : "1",
+      "label"       : "openSUSE/SUSE",
+      "title"       : "openSUSE images and projects",
+      "description" : "This project contains official openSUSE images and projects"
     },
     "examples" : {
-      "title" : "Example KankuFile's",
-      "description" : "This project contains examples of KankuFile's demontrating special features or setup scenarios."
+      "order"       : "2",
+      "label"       : "Services",
+      "title"       : "Example KankuFile's",
+      "description" : "This project contains examples of KankuFile's demonstrating special features or setup scenarios."
+    },
+    "dki" : {
+      "order"   : "3",
+      "label"   : "d:k:i",
+      "summary" : "This section contains basic KankuFiles for all official kanku images in the (OBS Project devel:kanku:images)[https://build.opensuse.org/project/show/devel:kanku:images]."
+    },
+    "kanku"  : {
+      "order"       : "4",
+      "label"       : "Kanku",
+      "title"       : "Example KankuFile's",
+      "description" : "This project contains examples of different kanku setups in various modes on multiple available distributions"
     }
   }
 }
