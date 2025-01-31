@@ -110,11 +110,10 @@ function createNavBar() {
 }
 
 $(document).ready(function() {
+  createNavBar();
   var hash = window.location.hash;
   if (hash) {
     var section = hash.match('^#section-(.*)')[1];
     updateSection(section);
   }
-
-  createNavBar();
 });
