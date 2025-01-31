@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use YAML;
-use JSON;
+use JSON::MaybeXS;
 use File::Find;
 use Path::Tiny;
 
