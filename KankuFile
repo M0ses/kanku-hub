@@ -7,7 +7,7 @@ info:
                # Enjoy YLWK!
 
 domain_name: kanku-hub
-default_job: tasks
+default_job: web
 login_user: root
 login_pass: kankudai
 
@@ -43,7 +43,7 @@ jobs:
         - zypper ar obs://devel:kanku:staging dks
         - zypper --gpg-auto-import-keys ref -s
         - zypper -n in kanku-cli
-        - kanku setup --devel --user kanku
+        - kanku setup devel --user kanku
  web:
   -
     use_module: Kanku::Handler::OBSCheck
@@ -91,7 +91,6 @@ notifiers:
           **** by
           ****   [% "kanku ssh" | color 'blue' +%]
           ****
-          **** xdg-open http://kanku-hub.kanku.devel
         loglevel: info
       states: succeed
   web:
