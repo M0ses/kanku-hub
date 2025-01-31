@@ -104,6 +104,7 @@ function createNavBar() {
         $('#navbar-content').append(`<li><a href="#section-${sec}" onclick="updateSection('${sec}')">${label}</a></li>`);
       }
     });
+    $('#navbar-content').append(`<li><a href="#settings" onclick="openSettings()"><i class="fa-solid fa-gear"></i> Settings</a></li>`);
     $('#navbar-content').append(`</ul>`);
   });
 }
