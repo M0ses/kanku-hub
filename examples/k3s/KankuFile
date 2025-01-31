@@ -1,0 +1,75 @@
+info:
+  summary: Install k3s on a openSUSE Tumbleweed VM
+  description: |+
+               This Kankufile
+
+               * downloads the dki openSUSE TW image
+               * creates and starts a new VM
+               * installs missing packages
+               * configures sudoers for kanku user without password
+               * run script to (install k3s)[https://get.k3s.io]
+
+               **Enjoy YLWK!**
+
+domain_name: k3s
+default_job: tasks
+login_user: root
+login_pass: kankudai
+
+jobs:
+ tasks:
+  -
+    use_module: Kanku::Handler::SetJobContext
+    options:
+      host_interface: eth0
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      obsurl: https://build.opensuse.org/public
+      project: devel:kanku:images
+      package: openSUSE-Tumbleweed-JeOS:ext4
+      repository: images_tumbleweed
+      use_oscrc: 0
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 2G
+      vcpu: 2
+      use_9p: 1
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::CopyProfile
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        - zypper --gpg-auto-import-keys ref -s
+        - zypper -n install sudo
+        - 'echo "kanku ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/kanku'
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      username: kanku
+      commands:
+        - curl -sfL https://get.k3s.io | sh - 
+        - sudo /usr/local/bin/k3s kubectl get node
+
+job_groups:
+  all:
+    - tasks
+
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          
+          [% "kanku ssh" | color 'blue' %]
+          
+      states: succeed
+
