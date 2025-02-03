@@ -32,5 +32,22 @@
       "title"       : "Example KankuFile's",
       "description" : "This project contains examples of different kanku setups in various modes on multiple available distributions"
     }
-  }
+  },
+  "maintainers": [
+    {
+      "alias":        "M0ses",
+      "fn":           "Frank",
+      "sn":           "Schreiner",
+      "mail":         "frank@samaxi.de",
+      "avatar":       "_maintainers/M0ses.jpg",
+      "links": [
+
+	["github",           "https://github.com/M0ses/"],
+	["gitlab",           "https://gitlab.com/M0ses/"],
+	["boo",              "https://build.opensuse.org/users/M0ses"],
+	["home",             "https://samaxi.de/page/users/frank/"]
+      ],
+      "useGravatar": "0"
+    }
+  ]
 }

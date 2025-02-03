@@ -4,20 +4,41 @@
     <title>KankuHub - Home of KankuFile's</title>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <link href="_theme/css/bootstrap-5.3.3.min.css" rel="stylesheet">
-    <link href="_theme/css/normalize.css" rel="stylesheet">
-    <link href="_theme/css/skeleton.css" rel="stylesheet">
-    <link href="_theme/css/default.css" rel="stylesheet">
-    <link href="_assets/fontawesome/css/fontawesome.min.css" rel="stylesheet">
-    <link href="_assets/fontawesome/css/solid.css" rel="stylesheet">
+    <link href="_assets/bootstrap-5.3.3.min.css" rel="stylesheet">
+    <link href="_assets/fontawesome/css/all.min.css" rel="stylesheet">
+    <link href="_theme/css/kankuhub.css" rel="stylesheet">
   </head>
   <body>
-    <header>
-      <nav class="navbar">
-	<div class="container" id="navbar-content"></div>
+      <nav class="navbar navbar-expand-lg">
+	<div class="container">
+	  <a class="brand" id="brandLink" href="/">#</a>
+	  <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+	    <ul class="navbar-nav">
+	      <li id="sectionsList" class="dropdown nav-item"></li>
+	      <li class="nav-item">
+		<a class="nav-link" href="#maintainers" onclick="updatePageContent(['maintainers'])">
+		  <i class="fa-solid fa-user"></i> Maintainers
+		</a>
+	      </li>
+	      <li class="nav-item">
+		<a class="nav-link" href="#settings" onclick="updatePageContent(['settings'])">
+		  <i class="fa-solid fa-gear"></i> Settings
+		</a>
+	      </li>
+	    </ul>
+	    <!-- TODO: implement search
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-light" type="submit">Search</button>
+            </form>
+	    -->
+	  </div>
+	  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+	</div>
       </nav>
-    </header>
-     <div class="main container" id="page-content">
+     <div class=container id="pageContent">
       <div class="row">
         <div class="twelve columns">
 <h3>Welcome to KankuHub - Home of KankuFile's</h3>
@@ -37,33 +58,32 @@ KankuHub provides the following base section's:
     </div>
     <div class="modal" id="urlWrapperWarning" tabindex="-1">
       <div class="modal-dialog">
-	<!-- Modal content-->
-	<div class="modal-content">
-	  <div class="modal-header">
-	    <h4 class="modal-title">Warning</h4>
-	    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-	  </div>
-	  <div class="modal-body">
-	    <p>
-	        To work properly the button <span class="btn btn-success btn-large">Start VM</span>
-		requires the kanku urlwrapper to be installed and configured properly.
-		Please use your distributions package manager to install the package "kanku-urlwrapper".
-	    </p>
-	    <p>
-	        E.g. on SUSE systems you can use:<br>
-		<code>su -c "zypper -n install kanku-urlwrapper"</code>
-	    </p>
-	    <input type="checkbox" id="dontShowWarningAgain" onchange="setWarningState(this)">&nbsp;<strong>Do no show this warning again</strong> (requires cookies).
-	  </div>
-	  <div class="modal-footer">
-	    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-	  </div>
-	</div>
+       <!-- Modal content-->
+       <div class="modal-content">
+         <div class="modal-header">
+           <h4 class="modal-title">Warning</h4>
+           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body">
+           <p>
+               To work properly the button <span class="btn btn-success btn-large">Start VM</span>
+               requires the kanku urlwrapper to be installed and configured properly.
+               Please use your distributions package manager to install the package "kanku-urlwrapper".
+           </p>
+           <p>
+               E.g. on SUSE systems you can use:<br>
+               <code>su -c "zypper -n install kanku-urlwrapper"</code>
+           </p>
+           <input type="checkbox" id="dontShowWarningAgain" onchange="setWarningState(this.id, true)">&nbsp;<strong>Do no show this warning again</strong>
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+         </div>
+       </div>
       </div>
      </div>
     <footer></footer>
   </body>
-<script src="_app/js.cookie.min.js"></script>
 <script src="_app/bootstrap-5.3.3.bundle.min.js"></script>
 <script src="_app/showdown-2.1.0.min.js"></script>
 <script src="_app/jquery-3.7.1.min.js"></script>

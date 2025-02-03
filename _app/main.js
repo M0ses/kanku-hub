@@ -14,32 +14,33 @@ class InfoBox {
     selector = selector.replace(/\./g, '_');
     var conv = new showdown.Converter();
     var desc = conv.makeHtml(this.info.description);
+    var sec  = this.section[1];
     return `
       <div class="accordion-item">
         <h2 class="accordion-header" id="heading-${selector}">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${selector}" aria-expanded="true" aria-controls="collapse-${selector}">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${selector}" aria-expanded="false" aria-controls="collapse-${selector}">
             <strong>${this.name}</strong> - ${this.info.summary}
           </button>
         </h2>
         <div id="collapse-${selector}" class="accordion-collapse collapse" aria-labelledby="heading-${selector}" data-bs-parent="#accordionInfoList">
           <div class="accordion-body">
-            <div class="container">
+            <div>
 	      <div class="row">
-		<div class="col-10">
+		<div class="col-9">
                   ${desc}
 		</div>
-		<div class="col-2">
+		<div class="col-3">
                   <ul class="bare">
-		   <li><a class="btn btn-lg btn-primary" href="${this.section}/${this.name}/KankuFile">KankuFile</a></li>
-		   <li><a class="btn btn-lg btn-secondary" href="${this.section}/${this.name}/KankuFile.asc">GPG Signature</a></li>
+		   <li><a class="btn btn-primary" href="${sec}/${this.name}/KankuFile">KankuFile</a></li>
+		   <li><a class="btn btn-secondary" href="${sec}/${this.name}/KankuFile.asc">GPG Signature</a></li>
                   </ul>
 		</div>
               </div>
             </div>
-            <div class="container">
+            <div>
 	      <div class="row">
 		<div class="col">
-		  <button class="btn btn-lg btn-success" onClick="checkKankuUrlHandler('${base}${this.section}/${this.name}/KankuFile')">Start VM</button>
+		  <button class="btn btn-success" onClick="checkKankuUrlHandler('${base}${sec}/${this.name}/KankuFile')">Start VM</button>
 		</div>
 	      </div>
             </div>
@@ -62,58 +63,146 @@ function sortObjectByOrder(a, b) {
   else                                    { return  0 }
 }
 
-function updateSection (section) {
-  $.getJSON('_kanku/sections/' + section + '.json', function (data) {
-    var pc = $('#page-content');
+function updatePageContent(section) {
+  if (section[0] == 'maintainers') {
+    var pc = $('#pageContent');
     pc.empty();
-    var html = "";
-    Object.entries(data).sort(sortObjectByKey).forEach(function(obj) {
-      var infobox = new InfoBox({'name':obj[0], 'info': obj[1]['info'], 'section': section});
-      html += infobox.toHTML();
+    pc.append(`<h3>Maintainers</h3>`);
+    $.getJSON('_kanku/hub.json', function (data) {
+      var html="";
+      data.maintainers.forEach(function(obj, idx) {
+	var links = "";
+	obj.links.forEach(function(link){
+	  var link_text;
+	  if (link[0] == 'github') {
+	    link_text = `<i class="fa-brands fa-github"></i> GitHub</a></li>`;
+	  }
+	  if (link[0] == 'gitlab') {
+	    link_text = `<i class="fa-brands fa-gitlab"></i> GitLab</a></li>`;
+	  }
+	  if (link[0] == 'home') {
+	    link_text = `<i class="fa-solid fa-house"></i> Home</a></li>`;
+	  }
+	  if (link[0] == 'boo') {
+	    link_text = `<i class="fa-solid fa-box"></i> OBS</a></li>`;
+	  }
+	  links += `<li><a class="btn btn-outline-dark" href="${link[1]}" target=_blank>${link_text}</a></li>`;
+	});
+	html += `
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading-maintainer-${idx}">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${idx}" aria-expanded="false" aria-controls="collapse-${idx}">
+            <strong>${obj.alias}</strong> - ${obj.mail}
+          </button>
+        </h2>
+        <div id="collapse-${idx}" class="accordion-collapse collapse" aria-labelledby="heading-maintainer-${idx}" data-bs-parent="#maintainersList">
+          <div class="accordion-body">
+            <div>
+	      <div class="row">
+		<div class="col-9">
+		  <img class="avatar-img float-start" src="${obj.avatar}" alt="Avatar of ${obj.alias}">
+                  <div><strong>Firstname:</strong> ${obj.fn}</div>
+                  <div><strong>Surname:</strong> ${obj.sn}</div>
+		  <div><strong>E-Mail:</strong> ${obj.mail}</div>
+		</div>
+		<div class="col-3">
+                  <ul class="maintainer-links">
+		   <li><a class="btn btn-secondary" href="_maintainers/${obj.alias}.asc"><i class="fa-solid fa-lock"></i> GPG Signature</a></li>
+		   <li><a class="btn btn-outline-dark" href="https://keys.openpgp.org/search?q=${obj.mail}"><i class="fa-solid fa-lock"></i> openpgp.org</a></li>
+		   ${links}
+                  </ul>
+		</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+`;
+      });
+      pc.append(`<div id="maintainersList" class="accordion">${html}</div>`);
     });
-    pc.append(`<div id="accordionInfoList" class="accordion">${html}</div>`);
-  });
+    return;
+  }
+  if (section[0] == 'settings') {
+    var pc = $('#pageContent');
+    pc.empty();
+    var checked = "";
+    var state   = localStorage.getItem("SuppressURLWrapperWarning");
+    if (!state) { checked = `checked="checked"`; }
+    pc.append(`
+      <h3>Settings</h3>
+      <div>
+        <input id="showWarningAgain" type=checkbox ${checked} onchange="setWarningState(this.id, false)">&nbsp;<strong>Show warning on</strong>&nbsp;<span class="btn btn-success">Start VM</span>
+      </div>
+    `);
+    return;
+  }
+  if (section[0] == 'section') {
+    $.getJSON('_kanku/sections/' + section[1] + '.json', function (data) {
+      var pc = $('#pageContent');
+      pc.empty();
+      var html = `<h3>Section: ${section[1]}</h3>`;
+      Object.entries(data).sort(sortObjectByKey).forEach(function(obj) {
+	var infobox = new InfoBox({'name':obj[0], 'info': obj[1]['info'], 'section': section});
+	html += infobox.toHTML();
+      });
+      pc.append(`<div id="accordionInfoList" class="accordion">${html}</div>`);
+    });
+  }
 }
 
 function checkKankuUrlHandler(url) {
   // TODO: Find possibility to check protocols registered in browser
-  var skip_warning = Cookies.get('SuppressURLWrapperWarning');
-  var dont_show = $("#dontShowWarningAgain").is(":checked")
-  if (!(dont_show || skip_warning)) {
+  var skip_warning = localStorage.getItem('SuppressURLWrapperWarning');
+  if (!skip_warning) {
     $("#urlWrapperWarning").modal("show");
   }
   document.location = url;
 }
 
-function setWarningState(box) {
-  if (box.checked) {
-    Cookies.set('SuppressURLWrapperWarning', true,{'SameSite':'Strict'});
+function setWarningState(box, comp) {
+  var sel   = `#${box}`;
+  var state = $(sel)[0].checked;
+  console.log(comp, state);
+  if (state == comp) {
+    localStorage.setItem('SuppressURLWrapperWarning', true);
   } else {
-    Cookies.remove('SuppressURLWrapperWarning');
+    localStorage.removeItem('SuppressURLWrapperWarning');
   }
 }
 
 function createNavBar() {
   $.getJSON('_kanku/hub.json', function (data) {
-    $('#navbar-content').empty();
-    $('#navbar-content').append(`<a class="brand" href="/">${data.name}</a><ul>`);
+    $('#brandLink').text(data.name);
+    var html =`
+      <a class="nav-link dropdown-toggle" href="#" id="navbarSections" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Sections
+      </a>
+      <ul class="dropdown-menu" aria-labelledby="navbarSections">
+    `;
+
     Object.entries(data.sections).sort(sortObjectByOrder).forEach(function(obj) {
       if (obj[1].order > 0) {
         var sec   = obj[0];
         var label = obj[1].label;
-        $('#navbar-content').append(`<li><a href="#section-${sec}" onclick="updateSection('${sec}')">${label}</a></li>`);
+        html += `<li><a class="dropdown-item" href="#section-${sec}" onclick="updatePageContent(['section', '${sec}'])">${label}</a></li>`;
       }
     });
-    $('#navbar-content').append(`<li><a href="#settings" onclick="openSettings()"><i class="fa-solid fa-gear"></i> Settings</a></li>`);
-    $('#navbar-content').append(`</ul>`);
+    html += `</ul>`;
+    $('#sectionsList').append(html);
   });
+}
+
+function openSettings() {
 }
 
 $(document).ready(function() {
   createNavBar();
   var hash = window.location.hash;
   if (hash) {
-    var section = hash.match('^#section-(.*)')[1];
-    updateSection(section);
+    var section = hash.match('^#(section|maintainers|settings)(-(.*))?');
+    var params  = Array(section[1]);
+    if (section[2]) { params.push(section[3]); }
+    updatePageContent(params);
   }
 });

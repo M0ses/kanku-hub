@@ -1,0 +1,123 @@
+
+body {
+    /* Raleway looks terrible, and in some cases is hard to read */
+    font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: #FFF;
+}
+
+.container {
+  max-width: 960px;
+}
+
+/** Navbar widget */
+.navbar {
+    color: #fff;
+    background-color: #159957;
+    background-image: linear-gradient(120deg, #155799, #159957);
+}
+
+.navbar .dropdown-menu {
+  background-color: white;
+}
+.navbar .dropdown-item {
+  color: #155799;
+}
+
+.navbar {
+    border-bottom: 1px solid #bbb;
+    color: #FFF;
+    background-color: white;
+}
+
+.navbar a {
+    color: #FFF;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    color: #1EAEDB;
+}
+
+.navbar .brand {
+    margin-right: 0.5em;
+}
+
+#pageContent {
+  padding-top: 2em;
+}
+
+/*
+header {
+  overflow: hidden;
+}
+
+header a {
+  text-decoration: none;
+}
+
+.navbar ul {
+    list-style: none;
+    display: inline-block;
+    margin: 1em 0;
+}
+
+.navbar li {
+    display: inline-block;
+    padding: 0 1em;
+    margin: 0;
+}
+.accordion-button {
+  margin-top: 0.5em;
+}
+
+*/
+
+.avatar-img {
+   width: 25%;
+}
+
+ul.bare {
+    list-style: none;
+}
+
+.bare li {
+   font-size: 0.75rem;
+   white-space: nowrap;
+   margin-top: 0.5rem;
+}
+
+ul.maintainer-links {
+    list-style: none;
+}
+
+.maintainer-links li {
+   font-size: 0.75rem;
+   white-space: nowrap;
+   margin-top: 0.5rem;
+}
+.maintainer-links a {
+   width: 100%;
+}
+
+@media ( max-width: 549px ) {
+    .column, .columns {
+        margin-left: 0;
+    }
+}
+
+
+/* Larger than mobile */
+@media (min-width: 400px) {}
+
+/* Larger than phablet (also point when grid becomes active) */
+@media (min-width: 550px) {}
+
+/* Larger than tablet */
+@media (min-width: 750px) {}
+
+/* Larger than desktop */
+@media (min-width: 1000px) {}
+
+/* Larger than Desktop HD */
+@media (min-width: 1200px) {}
+
