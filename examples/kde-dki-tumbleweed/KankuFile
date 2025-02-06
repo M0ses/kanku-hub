@@ -1,0 +1,72 @@
+info:
+  summary: Create a VM based on devel:kanku:images openSUSE Tumbleweed
+  description: |+
+               This KanuFile downloads a minimal openSUSE Tumbleweed image
+               from devel:kanku:images and creates a VM
+
+               **Enjoy YLWK!**
+
+domain_name: kde-dki-tumbleweed
+default_job: tasks
+login_user: root
+login_pass: kankudai
+
+jobs:
+ tasks:
+  -
+    use_module: Kanku::Handler::SetJobContext
+    options:
+      host_interface: eth0
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      obsurl: https://build.opensuse.org/public
+      project: devel:kanku:images
+      package: openSUSE-Tumbleweed-JeOS:ext4
+      repository: images_tumbleweed
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 4G
+      vcpu: 2
+      use_9p: 0
+      # template: with-spice.tt2
+      # template: virtio-spice.tt2
+      # template: qlx-spice.tt2
+      template: vga-vnc.tt2
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::CopyProfile
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        - zypper ref -s
+        - zypper -n install --recommends sddm xorg-x11 xorg-x11-driver-input xorg-x11-driver-video xorg-x11-server-Xspice xorg-x11-server-Xvfb xorg-x11-Xvnc xorg-x11-server-extra
+        - zypper -n install --recommends -t pattern kde x11
+        - systemctl set-default graphical.target
+  -
+    use_module: Kanku::Handler::Reboot
+    options:
+      wait_for_console: 0
+      wait_for_network: 1
+
+job_groups:
+  all:
+    - tasks
+
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed
+
