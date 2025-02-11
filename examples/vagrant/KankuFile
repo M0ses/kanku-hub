@@ -53,3 +53,19 @@ jobs:
         - kanku init -T vagrant -d vagrant
         - chmod 755 $HOME
         - kanku up
+
+notifiers:
+  vagrant:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Currently (02/2025) the permanent upstream changes in
+          **** the hashicorp infrastructur and Web API make it impossible to
+          **** provide a stable, reliable and working Kankufile.
+          ****
+          **** [% "Please check again later." |color 'yellow' +%]
+          ****
+      states: failed

@@ -78,6 +78,10 @@ jobs:
           expect: keys for SSH access?
           send: n
           send_enter: 1
+        -
+          expect: User Creation
+          send: "\t\t"
+          send_enter: 1
   -
     use_module: Kanku::Handler::PrepareSSH
   -
