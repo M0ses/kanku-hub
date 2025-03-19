@@ -1,51 +1,54 @@
+---
+###############################################################################
 info:
-  summary: Create VM from openSUSE Tumbleweed Minimal and install KDE
+  summary: Create VM from openSUSE Tumbleweed Minimal
   description: |+
-               This KankuFile creates a VM, installs KDE and configures the display-manager
-domain_name: openSUSE-Tumbleweed-kde
-default_job: kanku-job
+               This KankuFile creates a VM base on openSUSE-Tumbleweed-Minimal-VM.x86_64-kvm-and-xen
+               **Enjoy YLWK**
+
+###############################################################################
+domain_name: opensuse-tumbleweed
+default_job: tasks
 login_user: root
 login_pass: linux
 
+###############################################################################
 jobs:
- kanku-job:
-  -
-    use_module: Kanku::Handler::SetJobContext
-    options:
-      host_interface: eth0
+ tasks:
   -
     use_module: Kanku::Handler::ImageDownload
     options:
-      url: https://download.opensuse.org/tumbleweed/appliances/openSUSE-Tumbleweed-Minimal-VM.x86_64-kvm-and-xen-sdboot.qcow2
+      url: https://download.opensuse.org/tumbleweed/appliances/openSUSE-Tumbleweed-Minimal-VM.x86_64-kvm-and-xen.qcow2
   -
     use_module: Kanku::Handler::CreateDomain
     options:
       memory: 8G
       vcpu: 4 
-      use_9p: 1
-      pwrand:
-        users:
-          - root
-        recipients:
-          - fschreiner@suse.de
       template: vm-x86_64-uefi-tpm2.0.tt2
       no_wait_for_bootloader: 1 
       installation:
         -
-          expect: openSUSE
-          send: e
-          send_enter: 1
+          expect: Please press
+          send: t
+#          send_enter: 1
         -
-          expect: Welcome
+          expect: openSUSE Tumbleweed Minimal
+#          send: e
+          send_enter: 1
+#        -
+#          expect: Welcome
+#          send_enter: 1
+        -
+          expect: JeOS Firstboot
           send_enter: 1
         -
           expect: Select keyboard layout
           send_enter: 1
         -
-          expect: LICENSE AGREEMENT
+          expect: AGREEMENT
           send_enter: 1
         -
-          expect: Select time zone
+          expect: "Select time zone"
           send_enter: 1
         -
           expect: Enter root password
@@ -56,32 +59,32 @@ jobs:
           send: linux
           send_enter: 1
         -
-          expect: openSUSE Tumbleweed
-          send_enter: 1
-        -
-          expect: Disk Encryption
-          send: d
-          send_enter: 1
-        -
-          expect: Disk Encryption
-          send: d
-          send_enter: 1
-        -
-          expect: Neither password, TPM2 nor
-          send: y
+          expect: NetworkManager TUI
+          send: "\t\t"
           send_enter: 1
         -
           expect: Do you want to configure network
-          send: n
-          send_enter: 1
-        -
-          expect: keys for SSH access?
-          send: n
-          send_enter: 1
-        -
-          expect: User Creation
-          send: "\t\t"
-          send_enter: 1
+          send: "\t\t\n"
+#        -
+#          expect: Disk Encryption
+#          send: d
+#          send_enter: 1
+#        -
+#          expect: Disk Encryption
+#          send: d
+#          send_enter: 1
+#        -
+#          expect: Neither password, TPM2 nor
+#          send: y
+#          send_enter: 1
+#        -
+#          expect: keys for SSH access?
+#          send: n
+#          send_enter: 1
+#        -
+#          expect: User Creation
+#          send: "\t\t"
+#          send_enter: 1
   -
     use_module: Kanku::Handler::PrepareSSH
   -
@@ -89,3 +92,21 @@ jobs:
     options:
       commands:
         - echo "Just checking ssh connnection and key deployment"
+
+###############################################################################
+job_groups:
+  all:
+    - tasks
+
+###############################################################################
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed

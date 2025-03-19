@@ -1,3 +1,5 @@
+---
+###############################################################################
 info:
   summary: Create VM based on devel:kanku:images/SLES-15-SP3-JeOS
   description: |+
@@ -8,17 +10,15 @@ info:
 
                Enjoy YLWK!
 
+###############################################################################
 domain_name: dki-sle15-sp3
 default_job: tasks
 login_user: root
 login_pass: kankudai
 
+###############################################################################
 jobs:
  tasks:
-  -
-    use_module: Kanku::Handler::SetJobContext
-    options:
-      host_interface: eth0
   -
     use_module: Kanku::Handler::OBSCheck
     options:
@@ -32,22 +32,26 @@ jobs:
     options:
       memory: 2G
       vcpu: 2
-      use_9p: 1
   -
     use_module: Kanku::Handler::PrepareSSH
-  # Kanku::Handler::CopyProfile configuration in kanku-config.yml required
   -
     use_module: Kanku::Handler::CopyProfile
+  -
+    use_module: Kanku::Handler::ChangeDomainState
+    options:
+      action: reboot
   -
     use_module: Kanku::Handler::ExecuteCommandViaSSH
     options:
       commands:
         - echo "Just for testing ssh connection"
 
+###############################################################################
 job_groups:
   all:
     - tasks
 
+###############################################################################
 notifiers:
   tasks:
     -
@@ -59,4 +63,3 @@ notifiers:
           **** Your text for [% context.ipaddress | color 'red' %] goes here
           ****
       states: succeed
-

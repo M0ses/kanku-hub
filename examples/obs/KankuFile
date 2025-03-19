@@ -1,3 +1,5 @@
+---
+###############################################################################
 info:
   summary: Create a VM with an installed and configured obs-server
   description: |+
@@ -10,12 +12,17 @@ info:
                    * Create a VM based on dki/tumbleweed and
                      install/configure OBS:Server:Unstable/obs-server
 
+###############################################################################
 domain_name: obs
 default_job: appliance
 login_user: root
 login_pass: opensuse
 
+###############################################################################
 jobs:
+  #############################################################################
+  # JOB: appliance
+  #############################################################################
   appliance:
     -
       use_module: Kanku::Handler::OBSCheck
@@ -30,12 +37,14 @@ jobs:
       options:
         memory: 6G
         vcpu: 2
-        use_9p: 1
-        #template: with-spice
     -
       use_module: Kanku::Handler::PrepareSSH
     -
       use_module: Kanku::Handler::WaitForSystemd
+    -
+      use_module: Kanku::Handler::ChangeDomainState
+      options:
+        action: reboot
     -
       use_module: Kanku::Handler::ExecuteCommandViaSSH
       options:
@@ -60,6 +69,10 @@ jobs:
           - prove -v /usr/lib/obs/tests/appliance/*.ta
           - prove -v /usr/lib/obs/tests/appliance/*.ts
           - prove -v /usr/lib/obs/tests/appliance/*.t
+
+  #############################################################################
+  # JOB: tumbleweed
+  #############################################################################
   tumbleweed:
     -
       use_module: Kanku::Handler::SetJobContext
@@ -102,7 +115,10 @@ jobs:
           - zypper -n in perl-Devel-Cover osc perl-Test-Most
           - echo -en "[client]\nuser = root\npassword = opensuse\n" > /root/.my.cnf
     -
-      use_module: Kanku::Handler::Reboot
+      use_module: Kanku::Handler::ChangeDomainState
+      options:
+        action: reboot
+
     -
       use_module: Kanku::Handler::WaitForSystemd
     -
@@ -110,8 +126,38 @@ jobs:
       options:
         username: root
         commands:
-          - false
-          - cp -av /tmp/kanku/ .
-          - make -C /root/kanku/dist test_system
-          - PERL5LIB=/usr/lib/build/ make -C /root/kanku/src/backend test_unit
-          - make -C /root/kanku/dist/t/osc test_system
+          - logger -t kanku-job "Installing obs test packages"
+          - zypper -n in obs-tests-appliance-`rpm -q --qf "%{version}" obs-server` obs-backend-testsuite-`rpm -q --qf "%{version}" obs-server`
+          - logger -t kanku-job "Running tests"
+          - prove -v /usr/lib/obs/tests/appliance/*.ta
+          - prove -v /usr/lib/obs/tests/appliance/*.ts
+          - prove -v /usr/lib/obs/tests/appliance/*.t
+
+###############################################################################
+job_groups:
+  all:
+    - appliance
+    - tumbleweed
+
+###############################################################################
+notifiers:
+  appliance:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed
+  tumbleweed:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed

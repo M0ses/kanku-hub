@@ -1,3 +1,5 @@
+---
+###############################################################################
 info:
   summary: Kanku development jobs
   description: |+
@@ -20,19 +22,19 @@ info:
 
                Enjoy YLWK!
 
+###############################################################################
 guest:
   url: https://[% ctx.ipaddress %]/kanku/#/job_history/1
 
+###############################################################################
 domain_name: kanku-devel
 default_job: tasks
+login_user: root
+login_pass: kankudai
 
+###############################################################################
 jobs:
   tasks:
-    -
-      use_module: Kanku::Handler::SetJobContext
-      options:
-        login_user: root
-        login_pass: kankudai
     -
       use_module: Kanku::Handler::OBSCheck
       options:
@@ -52,7 +54,6 @@ jobs:
       options:
         memory: 6G
         vcpu: 2
-        use_9p: 1
         pwrand:
           users:
             - root
@@ -101,8 +102,20 @@ jobs:
           - sh -x /tmp/wait > /tmp/wait.log 2>&1
           - prove -v /usr/share/kanku/t/*.ts
 
+###############################################################################
 job_groups:
  all:
-   - cl
-   - sm
-   - cl
+   - tasks
+
+###############################################################################
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed

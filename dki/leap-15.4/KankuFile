@@ -1,14 +1,20 @@
+---
+###############################################################################
 info:
   summary: Create a VM based on devel:kanku:images Leap 15.4
   description: |+
                This KanuFile downloads a minimal Leap 15.4 image from 
                devel:kanku:images and creates a VM
 
+               **Enjoy YLWK!**
+
+###############################################################################
 domain_name: dki-leap-15-4
 default_job: tasks
 login_user: root
 login_pass: kankudai
 
+###############################################################################
 jobs:
   tasks:
     -
@@ -24,11 +30,36 @@ jobs:
       options:
         memory: 2G
         vcpu: 2
-        use_9p: 1
     -
       use_module: Kanku::Handler::PrepareSSH
+    -
+      use_module: Kanku::Handler::CopyProfile
+    -
+      use_module: Kanku::Handler::ChangeDomainState
+      options:
+        action: reboot
+        allow_ip_change:  1
+        management_interface: eth0
     -
       use_module: Kanku::Handler::ExecuteCommandViaSSH
       options:
         commands:
           - echo "Just for testing ssh connection" > /tmp/test.log 2>&1
+
+###############################################################################
+job_groups:
+  all:
+    - tasks
+
+###############################################################################
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed

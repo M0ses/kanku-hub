@@ -1,3 +1,5 @@
+---
+###############################################################################
 info:
   summary: Create VM based on openSUSE Tumbleweed (ext4) and install kanku in devel mode
   description: |+
@@ -7,11 +9,13 @@ info:
                * install kanku-cli
                * setup kanku in developer mode
 
+###############################################################################
 domain_name: kanku-devel-opensuse
 login_user: root
 login_pass: kankudai
 default_job: tasks
 
+###############################################################################
 jobs:
   tasks:
     -
@@ -27,7 +31,6 @@ jobs:
       options:
         memory: 4G
         vcpu: 2
-        use_9p: 1
     -
       use_module: Kanku::Handler::PrepareSSH
     -
@@ -49,10 +52,12 @@ jobs:
         commands:
           - prove -v /usr/share/kanku/t/*.td
 
+###############################################################################
 job_groups:
   all:
     - tasks
 
+###############################################################################
 notifiers:
   tasks:
     -

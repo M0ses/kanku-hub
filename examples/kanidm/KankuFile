@@ -1,3 +1,5 @@
+---
+###############################################################################
 info:
   summary: Install and setup kanidm on openSUSE Tumbleweed JeOS image
   description: |+
@@ -8,13 +10,17 @@ info:
                * create self-signed CA certificate
                * setup kanidm
 
+               **Enjoy YLWK**
+
+###############################################################################
 domain_name: idm
-default_job: idm
+default_job: tasks
 login_user: root
 login_pass: kankudai
 
+###############################################################################
 jobs:
- idm:
+ tasks:
   -
     use_module: Kanku::Handler::SetJobContext
     options:
@@ -32,7 +38,6 @@ jobs:
     options:
       memory: 2G
       vcpu: 2
-      use_9p: 1
   -
     use_module: Kanku::Handler::PrepareSSH
   -
@@ -66,8 +71,15 @@ jobs:
 #      username: kanku
 #      commands:
 #        - echo hallo|kanidm login --name idm_admin --url https://idm.kanku.devel:443
+
+###############################################################################
+job_groups:
+  all:
+    - tasks
+
+###############################################################################
 notifiers:
-  idm:
+  tasks:
     -
       use_module: Kanku::Notifier::Console
       options:

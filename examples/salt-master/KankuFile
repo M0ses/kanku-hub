@@ -1,3 +1,5 @@
+---
+###############################################################################
 info:
   summary: Leap 15.6 with salt-master
   description: |+
@@ -8,34 +10,57 @@ info:
                Mnions try to connect salt.their.domain.com in the default
                configuration, so no additional configuration required on the minion.
                
+###############################################################################
 domain_name: salt
 default_job: tasks
 login_user: root
 login_pass: kankudai
 
+###############################################################################
 jobs:
- tasks:
-  -
-    use_module: Kanku::Handler::OBSCheck
-    options:
-      project: devel:kanku:images
-      package: openSUSE-Leap-15.6-JeOS
-      repository: images_leap_15_6
-  -
-    use_module: Kanku::Handler::ImageDownload
-  -
-    use_module: Kanku::Handler::CreateDomain
-    options:
-      memory: 4G
-      vcpu: 4
-      use_9p: 1
-  -
-    use_module: Kanku::Handler::PrepareSSH
-  -
-    use_module: Kanku::Handler::CopyProfile
-  -
-    use_module: Kanku::Handler::ExecuteCommandViaSSH
-    options:
-      commands:
-        - zypper --gpg-auto-import-keys ref -s
-        - zypper -n in salt salt-minion salt-master
+  tasks:
+    -
+      use_module: Kanku::Handler::OBSCheck
+      options:
+        project: devel:kanku:images
+        package: openSUSE-Leap-15.6-JeOS
+        repository: images_leap_15_6
+    -
+      use_module: Kanku::Handler::ImageDownload
+    -
+      use_module: Kanku::Handler::CreateDomain
+      options:
+        memory: 4G
+        vcpu: 4
+    -
+      use_module: Kanku::Handler::PrepareSSH
+    -
+      use_module: Kanku::Handler::CopyProfile
+    -
+      use_module: Kanku::Handler::ChangeDomainState
+      options:
+        action: reboot
+    -
+      use_module: Kanku::Handler::ExecuteCommandViaSSH
+      options:
+        commands:
+          - zypper --gpg-auto-import-keys ref -s
+          - zypper -n in salt salt-minion salt-master
+
+###############################################################################
+job_groups:
+  all:
+    - tasks
+
+###############################################################################
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed

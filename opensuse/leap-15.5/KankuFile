@@ -1,26 +1,27 @@
+---
+###############################################################################
+
 info:
   summary: Official openSUSE 15.5 minimal image
   description: |+
                This KanuFile downloads and creates a virtual machine of the
                official openSUSE-Leap-15.5-Minimal-VM image
 
+###############################################################################
 domain_name: opensuse-leap-15-5
-default_job: kanku-job
+default_job: tasks
 login_user: root
 
-################################################################################
+###############################################################################
 # This password needs to be the same as used in 
 # Kanku::Handler::CreateDomain->options->installation->...
-################################################################################
+###############################################################################
 login_pass: linux
 
+###############################################################################
 jobs:
- kanku-job:
-  -
-    use_module: Kanku::Handler::SetJobContext
-    options:
-      host_interface: eth0
-  ##############################################################################
+ tasks:
+  #############################################################################
   #
   # We dont need Kanku::Handler::OBSCheck here as we use a static link
   # in the next handler (Kanku::Handler::ImageDownload) to
@@ -37,39 +38,39 @@ jobs:
   #    arch: x86_64
   #    # skip_check_project is required because publishing is disabled
   #    skip_check_project: 1
-  ##############################################################################
+  #############################################################################
   -
     use_module: Kanku::Handler::ImageDownload
     options:
-      ##########################################################################
+      #########################################################################
       # Here we need to specify the static link URL as no OBSCheck is involved
-      ##########################################################################
+      #########################################################################
       url: https://download.opensuse.org/distribution/leap/15.5/appliances/openSUSE-Leap-15.5-Minimal-VM.x86_64-kvm-and-xen.qcow2
   -
     use_module: Kanku::Handler::CreateDomain
     options:
       memory: 2G
       vcpu: 1
-      use_9p: 1
-      ##########################################################################
+      #########################################################################
       # pwrand: # OPTIONAL BUT STRONGLY RECOMMENDED
       #   users: # List of users inside the VM to set a randomized password for
       #     - root
       #   recipients: # List of mail addresses to encrypt the passwords for
       #     - fschreiner@suse.de
-      ##########################################################################
+      #########################################################################
 
-      ##########################################################################
+      #########################################################################
       # The with-spice template is required to 
       # get a proper redirection of the serial
       # console
-      ##########################################################################
-      template: with-spice
+      #########################################################################
+      # template: bios-serial-network.tt2
+      template: with-spice.tt2
 
-      ##########################################################################
+      #########################################################################
       # The following `installation` section is required to automize the
       # interactive bootstrapping process.
-      ##########################################################################
+      #########################################################################
       installation:
         -
           expect: Welcome
@@ -83,13 +84,13 @@ jobs:
         -
           expect: Select time zone
           send_enter: 1
-        ########################################################################
+        #######################################################################
         # The strings to send in following 2 entries need to be the same as in
         #
         # login_pass:
         #
         # at the beginning of this file
-        ########################################################################
+        #######################################################################
         -
           expect: Enter root password
           send: linux
@@ -99,18 +100,45 @@ jobs:
           send: linux
           send_enter: 1
 
-  ##############################################################################
+  #############################################################################
   # Deployment of openssh-server and authorized_keys as configured in your 
   # profile (or guessed - e.g. ssh public keys)
-  ##############################################################################
+  #############################################################################
   -
     use_module: Kanku::Handler::PrepareSSH
 
-  ##############################################################################
+  #############################################################################
+  # Testing reboot ability of installed VM
+  #############################################################################
+  #-
+  #  use_module: Kanku::Handler::ChangeDomainState
+  #  options:
+  #    action: reboot
+
+  #############################################################################
   # Testing results of Kanku::Handler::PrepareSSH 
-  ##############################################################################
+  #############################################################################
   -
     use_module: Kanku::Handler::ExecuteCommandViaSSH
     options:
       commands:
         - echo "Just checking ssh connnection and key deployment"
+
+###############################################################################
+job_groups:
+  all:
+    - tasks
+
+###############################################################################
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          **** [% "KNOW ISSUE: VM loops in grub on reboot" | color 'red' %] goes here
+          ****
+      states: succeed

@@ -1,19 +1,19 @@
+---
+###############################################################################
 info:
-  summary: JFT - using kanku with vagrant boxes
+  summary: Create a VM based on openSUSE Tumbleweed install kanku and test vagrant boxes
   description: |+
                FIXME - detailed description required
 
+###############################################################################
 domain_name: vagranku-host
-default_job: vagrant-ansible
+default_job: tasks
 login_user: root
 login_pass: kankudai
 
+###############################################################################
 jobs:
- vagrant-ansible:
-  -
-    use_module: Kanku::Handler::SetJobContext
-    options:
-      host_interface: eth0
+ tasks:
   -
     use_module: Kanku::Handler::OBSCheck
     options:
@@ -30,7 +30,6 @@ jobs:
       use_9p: 1
   -
     use_module: Kanku::Handler::PrepareSSH
-  # Kanku::Handler::CopyProfile configuration in kanku-config.yml required
   -
     use_module: Kanku::Handler::CopyProfile
   -
@@ -58,6 +57,8 @@ jobs:
       commands:
         - ssh-keygen -N "" -f .ssh/id_ed25519
         - kanku init -T vagrant -d vagranku-guest
+        - cp -av /tmp/kanku/guest.d/ .
+        - chmod 755 /home/kanku
         - perl -p -i -e 's#\s+- echo "Just testing ssh connection"#  - !include guest.d/run_ansible.yml#' KankuFile
         - eval `ssh-agent`;ssh-add;kanku up --skip_all_checks
   -
@@ -65,3 +66,21 @@ jobs:
     options:
       commands:
         - chmod 644 /etc/hosts
+
+###############################################################################
+job_groups:
+  all:
+    - tasks
+
+###############################################################################
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed

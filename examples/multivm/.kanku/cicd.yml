@@ -3,5 +3,5 @@ tests:
     -
       type: jobs
       jobs:
-        - multivm
+        - tasks
         - clean

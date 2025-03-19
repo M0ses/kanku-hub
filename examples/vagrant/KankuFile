@@ -1,3 +1,5 @@
+---
+###############################################################################
 info:
   summary: Create a VM and a KankuFile using a vagrant image
   description: |+
@@ -6,56 +8,66 @@ info:
                Then a KankuFile using the configured default box is created (`kanku init ...`).
                Last but not least `kanku up` is executed.
 
+               **Enjoy YLWK**
 
+###############################################################################
 domain_name: vagrant
-default_job: vagrant
+default_job: tasks
 login_user: root
 login_pass: kankudai
 
+###############################################################################
 jobs:
- vagrant:
-  -
-    use_module: Kanku::Handler::SetJobContext
-  -
-    use_module: Kanku::Handler::OBSCheck
-    options:
-      project: devel:kanku:images
-      package: openSUSE-Tumbleweed-JeOS:ext4
-      repository: images_tumbleweed
-  -
-    use_module: Kanku::Handler::ImageDownload
-  -
-    use_module: Kanku::Handler::CreateDomain
-    options:
-      memory: 6G
-      vcpu: 4
-      use_9p: 1
-  -
-    use_module: Kanku::Handler::PrepareSSH
-  -
-    use_module: Kanku::Handler::CopyProfile
-  -
-    use_module: Kanku::Handler::ExecuteCommandViaSSH
-    options:
-      commands:
-        - zypper ar obs://devel:kanku:staging dks
-        - zypper --gpg-auto-import-keys ref -s
-        - zypper -n in kanku-cli qemu-spice
-        - kanku setup devel --user kanku
-        # END
-        - "chown kanku -R /home/kanku/.ssh"
-  -
-    use_module: Kanku::Handler::ExecuteCommandViaSSH
-    options:
-      username: kanku
-      commands:
-        - 'ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""'
-        - kanku init -T vagrant -d vagrant
-        - chmod 755 $HOME
-        - kanku up
+  tasks:
+    -
+      use_module: Kanku::Handler::OBSCheck
+      options:
+        project: devel:kanku:images
+        package: openSUSE-Tumbleweed-JeOS:ext4
+        repository: images_tumbleweed
+    -
+      use_module: Kanku::Handler::ImageDownload
+    -
+      use_module: Kanku::Handler::CreateDomain
+      options:
+        memory: 6G
+        vcpu: 4
+    -
+      use_module: Kanku::Handler::PrepareSSH
+    -
+      use_module: Kanku::Handler::CopyProfile
+    -
+      use_module: Kanku::Handler::ExecuteCommandViaSSH
+      options:
+        commands:
+          - zypper ar obs://devel:kanku:staging dks
+          - zypper --gpg-auto-import-keys ref -s
+          - zypper -n in kanku-cli qemu-spice
+          - kanku setup devel --user kanku
+          # END
+          - "chown kanku -R /home/kanku/.ssh"
+    -
+      use_module: Kanku::Handler::ChangeDomainState
+      options:
+        action: reboot
+    -
+      use_module: Kanku::Handler::ExecuteCommandViaSSH
+      options:
+        username: kanku
+        commands:
+          - 'ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""'
+          - kanku init -T vagrant -d vagrant
+          - chmod 755 $HOME
+          - kanku up --ll DEBUG > /tmp/kanku-up.log 2>&1
 
+###############################################################################
+job_groups:
+  all:
+    - tasks
+
+###############################################################################
 notifiers:
-  vagrant:
+  tasks:
     -
       use_module: Kanku::Notifier::Console
       options:

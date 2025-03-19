@@ -6,6 +6,7 @@ use YAML;
 use JSON::PP;
 use File::Find;
 use Path::Tiny;
+use Try::Tiny;
 
 use Data::Dumper;
 
@@ -24,7 +25,12 @@ find(
 for my $kf (@KankuFiles) {
   my (undef, $sec, @id) = split('/', $kf);
   pop @id;
-  my $data = YAML::LoadFile($kf);
+  my $data;
+  try {
+    $data = YAML::LoadFile($kf);
+  } catch {
+    print "----- $kf\n";
+  };
   die "Invalid KankuFile found ($kf)! Missing info section." unless $data->{info};
   my $Id = join '/', @id;
   $Data->{$sec}->{$Id}->{info} = $data->{info};

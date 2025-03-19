@@ -5,11 +5,13 @@ info:
                installs kanku in developer mode and runs
                `kanku setup devel`
 
+###############################################################################
 domain_name: kanku-devel-fedora
 login_user: root
 login_pass: kankudai
 default_job: tasks
 
+###############################################################################
 jobs:
   tasks:
     -
@@ -25,7 +27,6 @@ jobs:
       options:
         memory: 4G
         vcpu: 2
-        use_9p: 1
         installation:
           -
             expect: Fedora
@@ -46,3 +47,21 @@ jobs:
           - dnf -y install kanku
           - rm  /etc/libvirt/qemu/networks/autostart/default.xml
           - kanku setup devel --user kanku --apiurl https://api.opensuse.org/public/
+
+###############################################################################
+job_groups:
+  all:
+    - tasks
+
+###############################################################################
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed

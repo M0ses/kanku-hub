@@ -1,29 +1,29 @@
 info:
-  summary: SHORT DESCRIPTION OF YOUR KankuFile
+  summary: Create a openSUSE Tumbleweed and install kanku-hub
   description: |+
-               # Here you can add a description of your KankuFile
-               # Please describe its purpose and what it's doing.
-               #
-               # Enjoy YLWK!
+               
+               **TODO:**
 
+               * remove use_9p
+               * clone kanku-hub from github
+               
+               **Enjoy YLWK!**
+
+###############################################################################
 domain_name: kanku-hub
-default_job: web
+default_job: tasks
 login_user: root
 login_pass: kankudai
 
+###############################################################################
 jobs:
  tasks:
   -
-    use_module: Kanku::Handler::SetJobContext
-    options:
-      host_interface: eth0
-  -
     use_module: Kanku::Handler::OBSCheck
     options:
       project: devel:kanku:images
       package: openSUSE-Tumbleweed-JeOS:ext4
       repository: images_tumbleweed
-      use_oscrc: 0
   -
     use_module: Kanku::Handler::ImageDownload
   -
@@ -37,33 +37,9 @@ jobs:
   -
     use_module: Kanku::Handler::CopyProfile
   -
-    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    use_module: Kanku::Handler::ChangeDomainState
     options:
-      commands:
-        - zypper ar obs://devel:kanku:staging dks
-        - zypper --gpg-auto-import-keys ref -s
-        - zypper -n in kanku-cli
-        - kanku setup devel --user kanku
- web:
-  -
-    use_module: Kanku::Handler::OBSCheck
-    options:
-      project: devel:kanku:images
-      package: openSUSE-Tumbleweed-JeOS:ext4
-      repository: images_tumbleweed
-      use_oscrc: 0
-  -
-    use_module: Kanku::Handler::ImageDownload
-  -
-    use_module: Kanku::Handler::CreateDomain
-    options:
-      memory: 2G
-      vcpu: 2
-      use_9p: 1
-  -
-    use_module: Kanku::Handler::PrepareSSH
-  -
-    use_module: Kanku::Handler::CopyProfile
+      action: reboot
   -
     use_module: Kanku::Handler::ExecuteCommandViaSSH
     options:
@@ -75,25 +51,14 @@ jobs:
         - systemctl enable --now apache2
         - kanku setup devel --user kanku
 
+###############################################################################
 job_groups:
   all:
     - tasks
 
+###############################################################################
 notifiers:
   tasks:
-    -
-      use_module: Kanku::Notifier::Console
-      options:
-        template: |+
-          [% USE Filter::ANSIColor 'color' %]
-          ****
-          **** Start developing by joining [% context.ipaddress | color 'bold' +%]
-          **** by
-          ****   [% "kanku ssh" | color 'blue' +%]
-          ****
-        loglevel: info
-      states: succeed
-  web:
     -
       use_module: Kanku::Notifier::Console
       options:
@@ -104,5 +69,3 @@ notifiers:
           ****
         loglevel: info
       states: succeed
-
-

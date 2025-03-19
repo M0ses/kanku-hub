@@ -5,11 +5,13 @@ info:
                installs kanku in developer mode and runs
                `kanku setup --devel`
 
+###############################################################################
 domain_name: kanku-devel-15-6
 login_user: root
 login_pass: kankudai
 default_job: tasks
 
+###############################################################################
 jobs:
   tasks:
     -
@@ -25,7 +27,6 @@ jobs:
       options:
         memory: 2G
         vcpu: 2
-        use_9p: 1
     -
       use_module: Kanku::Handler::PrepareSSH
     -
@@ -40,10 +41,12 @@ jobs:
           - zypper -n in kanku-cli
           - kanku setup devel --ll TRACE --user kanku --apiurl https://api.opensuse.org/public/ --osc_pass admin --osc_user admin > /tmp/setup.log 2>&1 || { cat /tmp/setup.log; exit 1; }
 
+###############################################################################
 job_groups:
   all:
     - tasks
 
+###############################################################################
 notifiers:
   tasks:
     -

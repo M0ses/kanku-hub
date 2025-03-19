@@ -1,3 +1,5 @@
+---
+###############################################################################
 info:
   summary: Install k3s on a openSUSE Tumbleweed VM
   description: |+
@@ -11,25 +13,21 @@ info:
 
                **Enjoy YLWK!**
 
+###############################################################################
 domain_name: k3s
 default_job: tasks
 login_user: root
 login_pass: kankudai
 
+###############################################################################
 jobs:
  tasks:
   -
-    use_module: Kanku::Handler::SetJobContext
-    options:
-      host_interface: eth0
-  -
     use_module: Kanku::Handler::OBSCheck
     options:
-      obsurl: https://build.opensuse.org/public
       project: devel:kanku:images
       package: openSUSE-Tumbleweed-JeOS:ext4
       repository: images_tumbleweed
-      use_oscrc: 0
   -
     use_module: Kanku::Handler::ImageDownload
   -
@@ -37,7 +35,6 @@ jobs:
     options:
       memory: 2G
       vcpu: 2
-      use_9p: 1
   -
     use_module: Kanku::Handler::PrepareSSH
   -
@@ -57,10 +54,12 @@ jobs:
         - curl -sfL https://get.k3s.io | sh - 
         - sudo /usr/local/bin/k3s kubectl get node
 
+###############################################################################
 job_groups:
   all:
     - tasks
 
+###############################################################################
 notifiers:
   tasks:
     -
@@ -72,4 +71,3 @@ notifiers:
           [% "kanku ssh" | color 'blue' %]
           
       states: succeed
-

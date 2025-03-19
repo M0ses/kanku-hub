@@ -1,15 +1,19 @@
+---
+###############################################################################
 info:
   summary: Installation of nextcloud on openSUSE Tumbleweed
   description: |+
                This KankuFile creates a VM based on dki/tumbleweed and installs/configures nextloud
  
-               Enoy YLWK
+               **Enjoy YLWK**
 
+###############################################################################
 domain_name: cloud
 default_job: tasks
 login_user: root
 login_pass: kankudai
 
+###############################################################################
 jobs:
  tasks:
   -
@@ -30,17 +34,8 @@ jobs:
     options:
       memory: 2G
       vcpu: 2
-      use_9p: 1
-
-      # Please be aware that enabling a pool my bind a KankuFile to specific
-      # libvirtd configuration.
-      # KankuFiles containing the pool parameter are not supposed to be commited
-      # into projects SCM's
-      # pool_name: default
-
   -
     use_module: Kanku::Handler::PrepareSSH
-  # Kanku::Handler::CopyProfile configuration in kanku-config.yml required
   -
     use_module: Kanku::Handler::CopyProfile
   -
@@ -50,10 +45,12 @@ jobs:
         - zypper -n ref -s
         - zypper -n in nextcloud
 
+###############################################################################
 job_groups:
   all:
     - tasks
 
+###############################################################################
 notifiers:
   tasks:
     -
