@@ -107,7 +107,7 @@ function updatePageContent(section) {
 		</div>
 		<div class="col-3">
                   <ul class="maintainer-links">
-		   <li><a class="btn btn-secondary" href="_maintainers/${obj.alias}.asc"><i class="fa-solid fa-lock"></i> GPG Signature</a></li>
+		   <li><a class="btn btn-secondary" href="_maintainers/${obj.alias}.asc"><i class="fa-solid fa-lock"></i> GPG Public Key</a></li>
 		   <li><a class="btn btn-outline-dark" href="https://keys.openpgp.org/search?q=${obj.mail}"><i class="fa-solid fa-lock"></i> openpgp.org</a></li>
 		   ${links}
                   </ul>
