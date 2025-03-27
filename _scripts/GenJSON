@@ -41,4 +41,6 @@ for my $sec (keys %{$Data}) {
   $of->spew(encode_json($Data->{$sec}));
 }
 
+system("git -C $SearchDir add _kanku");
+system("git -C $SearchDir commit -m 'update json files'");
 exit 0;
