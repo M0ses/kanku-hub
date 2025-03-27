@@ -1,0 +1,59 @@
+info:
+  summary: Create VM based on openSUSE Leap 16 and install kanku in devel mode
+  description: |+
+               This KankuFile creates a VM based on  openSUSE Leap 16 and 
+               installs kanku in developer mode and runs
+               `kanku setup --devel`
+
+###############################################################################
+domain_name: kanku-devel-16
+login_user: root
+login_pass: kankudai
+default_job: tasks
+
+###############################################################################
+jobs:
+  tasks:
+    -
+      use_module: Kanku::Handler::OBSCheck
+      options:
+        project: devel:kanku:images
+        repository: images_leap_16_0
+        package: openSUSE-Leap-16.0-JeOS
+    -
+      use_module: Kanku::Handler::ImageDownload
+    -
+      use_module: Kanku::Handler::CreateDomain
+      options:
+        memory: 2G
+        vcpu: 2
+    -
+      use_module: Kanku::Handler::PrepareSSH
+    -
+      use_module: Kanku::Handler::ExecuteCommandViaSSH
+      options:
+        commands:
+          - zypper -n ar https://download.opensuse.org/distribution/leap/16.0/repo/oss/ openSUSE:Leap:OSS
+#          - zypper -n ar https://download.opensuse.org/update/leap/16.0/oss/ openSUSE:Leap:Update
+          - zypper -n ar https://download.opensuse.org/repositories/devel:/kanku:/backports/16.0/ dkb
+          - zypper -n --gpg-auto-import-keys ref -s
+          - zypper -n in kanku-cli
+          - kanku setup devel --ll TRACE --user kanku --apiurl https://api.opensuse.org/public/ --osc_pass admin --osc_user admin > /tmp/setup.log 2>&1 || { cat /tmp/setup.log; exit 1; }
+
+###############################################################################
+job_groups:
+  all:
+    - tasks
+
+###############################################################################
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed
