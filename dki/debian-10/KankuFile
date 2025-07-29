@@ -1,0 +1,71 @@
+---
+###############################################################################
+info:
+  summary: Create a VM based on devel:kanku:images Debian 10
+  description: |+
+               This KanuFile downloads a minimal Debian 10 image from
+               devel:kanku:images and creates a VM
+
+               **Enjoy YLWK**
+
+###############################################################################
+domain_name: dki-debian10
+default_job: tasks
+login_user: root
+login_pass: kankudai
+
+###############################################################################
+jobs:
+  tasks:
+    -
+      use_module: Kanku::Handler::OBSCheck
+      options:
+        project: devel:kanku:images
+        package: Debian-10
+        repository: images_ubuntu
+    -
+      use_module: Kanku::Handler::ImageDownload
+    -
+      use_module: Kanku::Handler::CreateDomain
+      options:
+        memory: 2G
+        vcpu: 2
+    -
+      use_module: Kanku::Handler::PrepareSSH
+    -
+      use_module: Kanku::Handler::ExecuteCommandViaSSH
+      options:
+        commands:
+          - sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub 
+          - update-grub2
+    -
+      use_module: Kanku::Handler::CopyProfile
+    -
+      use_module: Kanku::Handler::ChangeDomainState
+      options:
+        action: reboot
+    -
+      use_module: Kanku::Handler::ExecuteCommandViaSSH
+      options:
+        commands:
+          - perl -p -i -e 's/buster/oldstable/' /etc/apt/sources.list
+          - perl -p -i -e 's#http://security.*#http://security.debian.org/debian-security oldstable-security Release#' /etc/apt/sources.list
+          - apt-get update
+
+###############################################################################
+job_groups:
+  all:
+    - tasks
+
+###############################################################################
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed
