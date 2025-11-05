@@ -1,7 +1,7 @@
 ---
 ###############################################################################
 info:
-  summary: Create a VM based on devel:kanku:images Leap 16.
+  summary: Create a VM based on devel:kanku:images Leap 16.1
   description: |+
                This KanuFile downloads a minimal Leap 16.1 image from 
                devel:kanku:images and creates a VM
