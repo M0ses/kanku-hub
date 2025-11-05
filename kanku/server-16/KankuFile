@@ -16,7 +16,7 @@ guest:
   url: https://[% ctx.ipaddress %]/kanku/#/job_history/1
 
 ###############################################################################
-domain_name: kanku-devel
+domain_name: kanku-server-16
 default_job: tasks
 login_user: root
 login_pass: kankudai
@@ -53,7 +53,7 @@ jobs:
       use_module: Kanku::Handler::ExecuteCommandViaSSH
       options:
         commands:
-          - zypper -n ar https://download.opensuse.org/repositories/devel:/kanku:/backports/16.0/ dkb
+          - zypper -n ar https://download.opensuse.org/repositories/devel:/kanku:/staging/16.0/ dks
           - zypper --gpg-auto-import-keys ref -s
           # Only for development
           - zypper -n in make apache2 sqlite3
@@ -105,5 +105,8 @@ notifiers:
           [% USE Filter::ANSIColor 'color' %]
           ****
           **** Your text for [% context.ipaddress | color 'red' %] goes here
+          **** Please visit
+          **** ---- https://kanku-server-16.kanku.site/kanku
+          **** and check your installation
           ****
       states: succeed
