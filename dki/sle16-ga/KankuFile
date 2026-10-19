@@ -13,13 +13,13 @@ info:
 
 ###############################################################################
 domain_name: dki-sle16-ga
-default_job: tasks
+default_job: ext4
 login_user: root
 login_pass: kankudai
 
 ###############################################################################
 jobs:
- tasks:
+ ext4:
   -
     use_module: Kanku::Handler::SetJobContext
     options:
@@ -28,7 +28,7 @@ jobs:
     use_module: Kanku::Handler::OBSCheck
     options:
       project: devel:kanku:images
-      package: SLES-16-GA-JeOS
+      package: SLES-16-GA-JeOS:ext4
       repository: images_sle16
   -
     use_module: Kanku::Handler::ImageDownload
@@ -52,14 +52,107 @@ jobs:
       commands:
         - echo "Just for testing ssh connection"
 
+ btrfs:
+  -
+    use_module: Kanku::Handler::SetJobContext
+    options:
+      host_interface: eth0
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      project: devel:kanku:images
+      package: SLES-16-GA-JeOS:btrfs
+      repository: images_sle16
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 2G
+      vcpu: 2
+      use_9p: 1
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::CopyProfile
+  -
+    use_module: Kanku::Handler::ChangeDomainState
+    options:
+      action: reboot
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        - echo "Just for testing ssh connection"
+ transactional:
+  -
+    use_module: Kanku::Handler::SetJobContext
+    options:
+      host_interface: eth0
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      project: devel:kanku:images
+      package: SLES-16-GA-JeOS:transactional
+      repository: images_sle16
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 2G
+      vcpu: 2
+      use_9p: 1
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::CopyProfile
+  -
+    use_module: Kanku::Handler::ChangeDomainState
+    options:
+      action: reboot
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        - echo "Just for testing ssh connection"
+ clean:
+  -
+    use_module: Kanku::Handler::CleanupIPTables
+  -
+    use_module: Kanku::Handler::RemoveDomain
 ###############################################################################
 job_groups:
   all:
-    - tasks
+    - ext4
+    - clean
+    - btrfs
+    - clean
+    - transactional
 
 ###############################################################################
 notifiers:
-  tasks:
+  ext4:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed
+  btrfs:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Your text for [% context.ipaddress | color 'red' %] goes here
+          ****
+      states: succeed
+  transactional:
     -
       use_module: Kanku::Notifier::Console
       options:
