@@ -1,7 +1,7 @@
 ---
 ###############################################################################
 info:
-  summary: Create VM based on devel:kanku:images/SLES-16-GA-JeOS
+  summary: Create VM based on devel:kanku:images/SLES-16.1-GA-JeOS
   description: |+
                This KankuFile does the following steps:
 
@@ -29,7 +29,7 @@ jobs:
     options:
       project: devel:kanku:images
       package: SLES-16.1-GA-JeOS:ext4
-      repository: images_sle16
+      repository: images_sle16_1
   -
     use_module: Kanku::Handler::ImageDownload
   -
@@ -94,7 +94,7 @@ jobs:
     options:
       project: devel:kanku:images
       package: SLES-16.1-GA-JeOS:transactional
-      repository: images_sle16
+      repository: images_sle16_1
   -
     use_module: Kanku::Handler::ImageDownload
   -
