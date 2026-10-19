@@ -1,0 +1,56 @@
+info:
+  summary: SHORT DESCRIPTION OF YOUR KankuFile
+  description: |+
+               # Here you can add a description of your KankuFile
+               # Please describe its purpose and what it's doing.
+               #
+               # Enjoy YLWK!
+domain_name: dki-sl-micro-62
+default_job: tasks
+login_user: root
+login_pass: kankudai
+
+jobs:
+ tasks:
+  -
+    use_module: Kanku::Handler::OBSCheck
+    options:
+      project: devel:kanku:images
+      package: SL-Micro-6.2
+      repository: images_sl_micro_62
+  -
+    use_module: Kanku::Handler::ImageDownload
+  -
+    use_module: Kanku::Handler::CreateDomain
+    options:
+      memory: 2G
+      vcpu: 2
+      use_9p: 1
+  -
+    use_module: Kanku::Handler::PrepareSSH
+  -
+    use_module: Kanku::Handler::CopyProfile
+  -
+    use_module: Kanku::Handler::ExecuteCommandViaSSH
+    options:
+      commands:
+        - echo "Just for testing ssh connection"
+
+job_groups:
+  all:
+    - tasks
+
+notifiers:
+  tasks:
+    -
+      use_module: Kanku::Notifier::Console
+      options:
+        template: |+
+          [% USE Filter::ANSIColor 'color' %]
+          ****
+          **** Have a lot of fun with your new VM!
+          **** The IP address of your new VM:
+          **** [% context.ipaddress | color 'red' +%]
+          ****
+      states: succeed
+
