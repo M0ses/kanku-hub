@@ -1,10 +1,13 @@
 info:
-  summary: SHORT DESCRIPTION OF YOUR KankuFile
+  summary: Create VM based on devel:kanku:images/SL-Micro-6.2
   description: |+
-               # Here you can add a description of your KankuFile
-               # Please describe its purpose and what it's doing.
-               #
-               # Enjoy YLWK!
+               This KankuFile does the following steps:
+
+               * download the dki image file
+               * create a VM
+               * do a ssh connection test to the newly created VM
+
+               **Enjoy YLWK!**
 domain_name: dki-sl-micro-62
 default_job: tasks
 login_user: root
