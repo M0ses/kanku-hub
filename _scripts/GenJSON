@@ -2,18 +2,25 @@
 
 use strict;
 use warnings;
+use Getopt::Long qw(GetOptions);
 use YAML;
 use JSON::PP;
 use File::Find;
 use Path::Tiny;
 use Try::Tiny;
 
-use Data::Dumper;
-
 my @KankuFiles;
 my $Data = {};
 my $SearchDir = './';
+# By default commit if changes exist, but support --no-commit to avoid loops
+my $Commit = 1;
 
+GetOptions(
+  'commit!' => \$Commit,
+  'dir=s'   => \$SearchDir,
+) or die "Usage: $0 [--no-commit] [--dir=path]\n";
+
+# Recursively locate all KankuFiles excluding hidden directories and metadata
 find(
   sub {
     return if $File::Find::name =~ m#^$SearchDir[_.]#;
@@ -22,6 +29,9 @@ find(
   $SearchDir
 );
 
+# Sort discovered files alphabetically to ensure deterministic processing
+@KankuFiles = sort @KankuFiles;
+
 for my $kf (@KankuFiles) {
   my (undef, $sec, @id) = split('/', $kf);
   pop @id;
@@ -29,18 +39,32 @@ for my $kf (@KankuFiles) {
   try {
     $data = YAML::LoadFile($kf);
   } catch {
-    print "----- $kf\n";
+    warn "Failed to parse YAML in $kf\n";
   };
-  die "Invalid KankuFile found ($kf)! Missing info section." unless $data->{info};
+  die "Invalid KankuFile found ($kf)! Missing info section."
+    unless ($data && $data->{info});
+
   my $Id = join '/', @id;
   $Data->{$sec}->{$Id}->{info} = $data->{info};
 }
 
-for my $sec (keys %{$Data}) {
+# Configure canonical JSON encoding to ensure sorted keys and reproducible diffs
+my $json_coder = JSON::PP->new->utf8->canonical;
+
+# Write each section's metadata in sorted section order
+for my $sec (sort keys %{$Data}) {
   my $of = path("$SearchDir/_kanku/sections/$sec.json");
-  $of->spew(encode_json($Data->{$sec}));
+  $of->spew($json_coder->encode($Data->{$sec}));
 }
 
-system("git -C $SearchDir add _kanku");
-system("git -C $SearchDir commit -m 'update json files'");
+# When commit is enabled, only create a commit if differences actually exist
+# to prevent empty commits and accidental infinite recursion in hooks
+if ($Commit) {
+  my $changes = `git -C $SearchDir status --porcelain _kanku`;
+  if ($changes) {
+    system("git -C $SearchDir add _kanku");
+    system("git -C $SearchDir commit -m 'update json files'");
+  }
+}
+
 exit 0;
