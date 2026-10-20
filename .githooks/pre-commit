@@ -1,0 +1,10 @@
+#!/bin/sh
+# Pre-commit hook for KankuHub:
+# Automatically regenerates deterministically sorted section JSON files
+# without spawning a second commit, and stages them into the current commit.
+
+# Regenerate JSON files using GenJSON with loop prevention
+perl _scripts/GenJSON --no-commit
+
+# Stage the updated JSON metadata into the current commit
+git add _kanku
