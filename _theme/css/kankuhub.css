@@ -42,6 +42,21 @@ body {
     margin-right: 0.5em;
 }
 
+/* Navbar search form layout and controls styling */
+#searchForm {
+    align-items: center;
+}
+
+#searchForm select {
+    width: auto;
+    min-width: 120px;
+    max-width: 160px;
+}
+
+#searchForm input[type="search"] {
+    min-width: 130px;
+}
+
 #pageContent {
   padding-top: 2em;
 }

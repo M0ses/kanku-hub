@@ -26,12 +26,20 @@
 		</a>
 	      </li>
 	    </ul>
-	    <!-- TODO: implement search
-            <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-light" type="submit">Search</button>
-            </form>
-	    -->
+	    <!-- Navbar search form with section filter -->
+	    <form class="d-flex ms-lg-3 my-2 my-lg-0" id="searchForm"
+		  role="search">
+	      <select class="form-select form-select-sm me-2"
+		      id="searchSection" name="section"
+		      aria-label="Filter by section">
+		<option value="">All sections</option>
+	      </select>
+	      <input class="form-control form-control-sm me-2"
+		     type="search" id="searchInput" name="q"
+		     placeholder="Search jobs..." aria-label="Search">
+	      <button class="btn btn-sm btn-outline-light" type="submit"
+		      id="searchButton">Search</button>
+	    </form>
 	  </div>
 	  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
